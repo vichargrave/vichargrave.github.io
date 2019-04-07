@@ -3,7 +3,7 @@ permalink: /projects/
 title: "Projects"
 ---
 
-These are my sample code projects on Github and their corresponding blog posts.
+These are my sample code projects on Github and their corresponding blog posts.  All of my projects have a supporting article except for *mau*.
 
 | Project              | Description                 |
 | -------------------- | --------------------------- |
@@ -11,7 +11,7 @@ These are my sample code projects on Github and their corresponding blog posts.
 | [espcap](https://github.com/vichargrave/espcap){:target="_blank"} | Example code from my [Packet Capture with Pyshark and Elasticsearch](/programming/packet-capture-with-pyshark-and-elasticsearch/){:target="_blank"} blog.
 | [getsomerest](https://github.com/vichargrave/getsomerest){:target="_blank"} | Example code from my [RESTful Web Services](/tutorials/restful-webservices-with-jersey/){:target="_blank"} with Jersey blog.
 | [mau](https://github.com/vichargrave/mau){:target="_blank"} | Oh My Zsh theme with a little cat twist (no blog for this one). 
-| [mtserver](https://github.com/vichargrave/mtserver){:target="_blank"} | Example code from my [Multithreaded Work Queue Based Server in C++](/programming/multithreaded-work-queue-based-server-in-cpp){:target="_blank"}) blog.
+| [mtserver](https://github.com/vichargrave/mtserver){:target="_blank"} | Example code from my [Multithreaded Work Queue Based Server in C++](/programming/multithreaded-work-queue-based-server-in-cpp){:target="_blank"} blog.
 | [mutex](https://github.com/vichargrave/mutex){:target="_blank"} | Example code from my [Mutex Class in C++](/programming/mutex-class-in-cpp/){:target="_blank"} blog.
 | [rlist](https://github.com/vichargrave/rlist){:target="_blank"} | Example code from my [Reverse a Singly Linked List](/programming/reversing-a-singly-linked-list/){:target="_blank"} blog.
 | [sniffer](https://github.com/vichargrave/sniffer){:target="_blank"} |  Example code from my [Develop a Packet Sniffer with Libpcap](/programming/develop-a-packet-sniffer-with-libpcap/){:target="_blank"} blog.
