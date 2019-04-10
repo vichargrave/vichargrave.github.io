@@ -2,6 +2,7 @@
 title:  "RESTful Web Services with Jersey"
 date:   2015-09-15 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/RESTful_Web_Services_with_Jersey.png
   teaser: /assets/images/RESTful_Web_Services_with_Jersey.png

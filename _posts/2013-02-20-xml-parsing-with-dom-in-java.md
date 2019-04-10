@@ -2,6 +2,7 @@
 title:  "XML Parsing with DOM in Java"
 date:   2013-02-20 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/XML_Parsing_with_DOM_in_Java.png
   teaser: /assets/images/XML_Parsing_with_DOM_in_Java.png

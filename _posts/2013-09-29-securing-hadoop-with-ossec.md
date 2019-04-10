@@ -2,6 +2,7 @@
 title:  "Securing Hadoop with OSSEC"
 date:   2013-09-28 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/Securing_Hadoop_with_OSSEC.png
   teaser: /assets/images/Securing_Hadoop_with_OSSEC.png

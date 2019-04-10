@@ -2,6 +2,7 @@
 title:  "Log Parsing with Morphlines, Part 1"
 date:   2018-09-01 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/Log_Parsing_with_Morphlines.png
   teaser: /assets/images/Log_Parsing_with_Morphlines.png

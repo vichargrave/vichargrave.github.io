@@ -2,6 +2,7 @@
 title:  "Elasticsearch Client Programming - Perl"
 date:   2014-06-10 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/Elasticsearch_Client_Programming_Perl.png
   teaser: /assets/images/Elasticsearch_Client_Programming_Perl.png

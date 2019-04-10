@@ -2,6 +2,7 @@
 title:  "XML Parsing with DOM in C++"
 date:   2013-01-23 12:40:37
 classes: wide
+toc: true
 header:
   teaser: /assets/images/XML_Parsing_with_DOM_in_C++.png
   image: /assets/images/XML_Parsing_with_DOM_in_C++.png

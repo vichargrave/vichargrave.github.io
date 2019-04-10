@@ -2,6 +2,7 @@
 title:  "XML Creation with DOM in Java"
 date:   2013-11-02 12:40:37
 classes: wide
+toc: true
 header:
   image: /assets/images/XML_Creation_with_DOM_in_Java.png
   teaser: /assets/images/XML_Creation_with_DOM_in_Java.png
