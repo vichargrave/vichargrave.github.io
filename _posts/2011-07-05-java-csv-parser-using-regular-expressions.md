@@ -1,6 +1,10 @@
 ---
 title:  "Java CSV Parser Using Regular Expressions"
 date:   2011-07-05 12:40:37
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 classes: wide
 header:
   teaser: /assets/images/Java_CSV_Parser_Using_Regular_Expressions.png
@@ -12,6 +16,8 @@ tags:
 ---
 
 Parsing files is a real pain. You can find programming tools to help, regular expressions for example, and even languages that are built for that sort of thing, like Perl.  But sooner or later you forget how to use them, unless you have a very good long term memory, in your head that is.
+
+## The Problem
 
 Recently I had a *simple* job to do, parse some text values that laid out in comma separated format (CSV). The kicker was one of the fields contained cities and states separated by commas that I wanted to keep in the field. This turns out is a particularly thorny problem. I also had to do it in Java. So here’s the kind of text I was up against:
 
@@ -28,6 +34,9 @@ City,State Population
 Medford,OR 60,000
 Redding,CA 75,000
 {% endhighlight %}
+
+
+## The Code
 
 You might be tempted to use StringTokenizer to eliminate the commas, but in so doing you would split the fields in between the quotes.  No, the problem is more complicated than that.
 

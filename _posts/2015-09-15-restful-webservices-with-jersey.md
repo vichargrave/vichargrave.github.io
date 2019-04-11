@@ -2,6 +2,10 @@
 title:  "RESTful Web Services with Jersey"
 date:   2015-09-15 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/RESTful_Web_Services_with_Jersey.png
   teaser: /assets/images/RESTful_Web_Services_with_Jersey.png

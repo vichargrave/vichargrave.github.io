@@ -2,6 +2,10 @@
 title:  "Mutex Class in C++"
 date:   2013-08-17 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/Mutex_Class_in_C++.png
   teaser: /assets/images/Mutex_Class_in_C++.png

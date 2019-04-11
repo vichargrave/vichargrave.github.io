@@ -2,6 +2,10 @@
 title:  "Elasticsearch Client Programming - Python"
 date:   2014-06-12 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/Elasticsearch_Client_Programming_Python.png
   teaser: /assets/images/Elasticsearch_Client_Programming_Python.png

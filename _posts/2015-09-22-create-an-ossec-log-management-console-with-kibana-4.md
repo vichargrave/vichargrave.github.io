@@ -2,6 +2,10 @@
 title:  "Create an OSSEC Log Management Console with Kibana"
 date:   2015-09-22 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/Create_an_OSSEC_Log_Management_Console_with_Kibana.png
   teaser: /assets/images/Create_an_OSSEC_Log_Management_Console_with_Kibana.png

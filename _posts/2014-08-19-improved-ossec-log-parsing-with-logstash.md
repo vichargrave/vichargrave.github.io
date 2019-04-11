@@ -2,6 +2,10 @@
 title:  "Improved OSSEC Log Parsing with Logstash"
 date:   2014-08-19 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/Improved_OSSEC_Log_Parsing_with_Logstash.png
   teaser: /assets/images/Improved_OSSEC_Log_Parsing_with_Logstash.png

@@ -2,6 +2,10 @@
 title:  "Packet Capture with Pyshark and Elasticsearch"
 date:   2015-12-18 12:40:37
 classes: wide
+author_profile: false
+toc: true
+toc_sticky: true
+toc_label: <a href="#site-nav">On This Page</a>
 header:
   image: /assets/images/Packet_Capture_with_Pyshark_and_Elasticsearch.png
   teaser: /assets/images/Packet_Capture_with_Pyshark_and_Elasticsearch.png
