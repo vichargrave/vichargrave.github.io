@@ -13,7 +13,7 @@ tags:
   - OSSEC
 ---
 
-The ELK stack (Elasticsearch-Logstash-Kibana) provides a cost effective alternative to commercial SIEMs for ingesting and managing OSSEC alert logs. Previously I wrote a blog – [OSSEC Log Management with Elasticsearch](/ossec-log-management-with-elasticsearch){:target="_blank"} – that discusses the design of an ELK based log system.
+The ELK stack (Elasticsearch-Logstash-Kibana) provides a cost effective alternative to commercial SIEMs for ingesting and managing OSSEC alert logs. Previously I wrote a blog – [OSSEC Log Management with Elasticsearch](/programming/ossec-log-management-with-elasticsearch){:target="_blank"} – that discusses the design of an ELK based log system.
 
 Since then some readers have asked for and suggested ways to parse additional fields from the OSSEC alert log stream. For example, the IP addresses of systems that cause certain security events is buried down in the Details field. So I have created a Logstash configuration file that does just that.
 
