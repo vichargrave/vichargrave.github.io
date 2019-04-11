@@ -8,6 +8,8 @@
 
 .sidebar {
   @include clearfix();
+  margin-bottom: 1em;
+
   @include breakpoint(max-width $large) {
     /* fix z-index order of follow links */
     position: relative;
@@ -29,20 +31,15 @@
 
     &.sticky {
       overflow-y: auto;
-      /* calculate height of nav list
-         viewport height - nav height - masthead x-padding
-      */
-      height: calc(100vh - #{$nav-height} - 2em);
+      /* calculate height of nav list */
+      height: calc(
+        100vh - 90px - 2em
+      ); // viewport height - approx. masthead height - main content top margin
     }
   }
 
   @include breakpoint($x-large) {
     width: calc(#{$right-sidebar-width} - 1em);
-  }
-
-  > * {
-    margin-top: 1em;
-    margin-bottom: 1em;
   }
 
   h2,
@@ -63,11 +60,6 @@
 
   img {
     width: 100%;
-    
-    &.emoji {
-      width: 20px;
-      height: 20px;
-    }
   }
 }
 
@@ -84,10 +76,10 @@
   @include breakpoint($large) {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     width: $right-sidebar-width-narrow;
-    margin-right: -1 * $right-sidebar-width-narrow;
-    padding-left: 1em;
+    margin-left: -1 * $right-sidebar-width-narrow;
+    padding-right: 1.5em;
     z-index: 10;
 
     &.sticky {
@@ -95,20 +87,20 @@
       position: -webkit-sticky;
       position: sticky;
       top: 2em;
-      float: right;
+      float: left;
     }
   }
 
   @include breakpoint($x-large) {
     width: $right-sidebar-width;
-    margin-right: -1 * $right-sidebar-width;
+    margin-left: -1 * $right-sidebar-width;
   }
 }
 
 .splash .sidebar__right {
   @include breakpoint($large) {
     position: relative;
-    float: right;
+    float: left;
     margin-right: 0;
   }
 
@@ -293,33 +285,6 @@
     &:hover {
       text-decoration: underline;
     }
-  }
-}
-
-/*
-   Wide Pages
-   ========================================================================== */
-
-.wide .sidebar__right {
-  margin-bottom: 1em;
-
-  @include breakpoint($large) {
-    position: initial;
-    top: initial;
-    right: initial;
-    width: initial;
-    margin-right: initial;
-    padding-left: initial;
-    z-index: initial;
-
-    &.sticky {
-      float: none;
-    }
-  }
-
-  @include breakpoint($x-large) {
-    width: initial;
-    margin-right: initial;
   }
 }
 
