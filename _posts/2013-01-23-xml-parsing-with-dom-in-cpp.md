@@ -5,7 +5,7 @@ classes: wide
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav">On This Page</a>
+toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
 header:
   teaser: /assets/images/XML_Parsing_with_DOM_in_C++.png
   image: /assets/images/XML_Parsing_with_DOM_in_C++.png
