@@ -2,7 +2,6 @@
 title:  "OSSEC Log Management with Elasticsearch"
 date:   2013-11-27 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/OSSEC_Does_Elasticsearch.png
   teaser: /assets/images/OSSEC_Does_Elasticsearch.png

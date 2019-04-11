@@ -2,7 +2,6 @@
 title:  "Develop a Packet Sniffer with Libpcap"
 date:   2012-12-09 12:40:37
 classes: wide
-toc: true
 header:
   teaser: /assets/images/Develop_a_Packet_Sniffer_with_Libpcap.png
   image: /assets/images/Develop_a_Packet_Sniffer_with_Libpcap.png

@@ -2,7 +2,6 @@
 title:  "Elasticsearch Client Programming - Python"
 date:   2014-06-12 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/Elasticsearch_Client_Programming_Python.png
   teaser: /assets/images/Elasticsearch_Client_Programming_Python.png

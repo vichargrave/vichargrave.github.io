@@ -2,7 +2,6 @@
 title:  "Multithreaded Work Queue in C++"
 date:   2013-01-04 12:40:37
 classes: wide
-toc: true
 header:
   teaser: /assets/images/Multithreaded_Work_Queue_in_C++.png
   image: /assets/images/Multithreaded_Work_Queue_in_C++.png

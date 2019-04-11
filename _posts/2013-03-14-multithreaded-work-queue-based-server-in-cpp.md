@@ -2,7 +2,6 @@
 title:  "Multithreaded Work Queue Based Server in C++"
 date:   2013-03-04 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/Multithreaded_Work_Queue_Based_Server_in_C++.png
   teaser: /assets/images/Multithreaded_Work_Queue_Based_Server_in_C++.png

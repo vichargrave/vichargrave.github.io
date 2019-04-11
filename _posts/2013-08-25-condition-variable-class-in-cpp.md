@@ -2,7 +2,6 @@
 title:  "Condition Variable Class in C++"
 date:   2013-08-25 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/Condition_Variable_Class_in_C++.png
   teaser: /assets/images/Condition_Variable_Class_in_C++.png

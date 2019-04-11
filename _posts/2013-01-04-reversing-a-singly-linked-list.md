@@ -2,7 +2,6 @@
 title:  "Reversing a Linked List"
 date:   2013-01-04 12:40:37
 classes: wide
-toc: true
 header:
   teaser: /assets/images/Reversing_a_Linked_List.png
   image: /assets/images/Reversing_a_Linked_List.png

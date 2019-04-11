@@ -2,7 +2,6 @@
 title:  "TCP/IP Sockets with Time Out Capabilities"
 date:   2014-03-27 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/TCPIP_Sockets_with_Time_Out_Capabilities.png
   teaser: /assets/images/TCPIP_Sockets_with_Time_Out_Capabilities.png

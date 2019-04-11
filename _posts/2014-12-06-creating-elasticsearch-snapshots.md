@@ -2,7 +2,6 @@
 title:  "Creating Elasticsearch Snapshots"
 date:   2014-12-06 12:40:37
 classes: wide
-toc: true
 header:
   image: /assets/images/Creating_Elasticsearch_Snapshots.png
   teaser: /assets/images/Creating_Elasticsearch_Snapshots.png

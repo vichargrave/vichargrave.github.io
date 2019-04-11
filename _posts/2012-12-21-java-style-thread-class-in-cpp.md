@@ -2,7 +2,6 @@
 title:  "Java Style Thread Class in C++"
 date:   2012-12-21 12:40:37
 classes: wide
-toc: true
 categories: 
   - Programming
 tags: 
