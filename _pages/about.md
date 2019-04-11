@@ -47,7 +47,9 @@ At any rate, many thanks for visiting my website. I hope you find my code projec
 
 Thanks to [Github](https://github.com){:target="blank"} for providing free website hosting with support for the [Jekyll](https://jekyllrb.com/){:target="blank"} framework.  
 
-Special thanks to **[Michael Rose](https://github.com/TaylanTatli){:target="_blank"}** for creating the **[Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes/){:target="_blank"}** theme, which I adapted for my website.
+Special thanks to **[Michael Rose](https://github.com/TaylanTatli){:target="_blank"}** for creating the **[Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes/){:target="_blank"}** theme, with which I built this website.
+
+Another special thanks to the folks of the [pandapower development team at the University of Kassel](https://github.com/e2nIEE) for the sidebar CSS that enables this site to put the article table of contents sections on the left side of the page in place of the author attribution.
 
 Finally, thanks to **[Dryicons](https://dryicons.com/icon-packs/handy-icons-set){:target="_blank"}** for my home page icons. 
 
