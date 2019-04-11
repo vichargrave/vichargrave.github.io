@@ -5,7 +5,7 @@ classes: wide
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav">On This Page</a>
+toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
 header:
   image: /assets/images/Elasticsearch_Client_Programming_Python.png
   teaser: /assets/images/Elasticsearch_Client_Programming_Python.png

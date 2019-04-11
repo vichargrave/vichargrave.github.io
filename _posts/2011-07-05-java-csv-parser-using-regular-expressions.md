@@ -4,7 +4,7 @@ date:   2011-07-05 12:40:37
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav">On This Page</a>
+toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
 classes: wide
 header:
   teaser: /assets/images/Java_CSV_Parser_Using_Regular_Expressions.png

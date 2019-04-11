@@ -5,7 +5,7 @@ classes: wide
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav">On This Page</a>
+toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
 header:
   image: /assets/images/Log_Parsing_with_Morphlines.png
   teaser: /assets/images/Log_Parsing_with_Morphlines.png
@@ -16,7 +16,7 @@ tags:
   - Java
 ---
 
-Morphlines is an open source parsing engine that enables you to write parsing applications that can handle a wide variety of log formats.  [Part 1](/programming/log-parsing-with-morphlines-1){:target="_blank"} of this series on log parsing with morphlines, I described how to use morphlines scripts to parse JSON and syslog formatted text streams then display the parsed fields to *stdout*.  In Part 2 I'll show you how to build a morphlines parser that returns the parse fields to the application so they can be processed according to your requirements. If you haven't read [Part 1](/programming/log-parsing-with-morphlines-1){:target="_blank"}, you should do so before continuing because I'm going to make references to concepts covered there upon which I will not elaborate here.
+Morphlines is an open source parsing engine that enables you to write parsing applications that can handle a wide variety of log formats.  [Part 1](/programming/log-parsing-with-morphlines-1){:target="_blank"} of this series on log parsing with morphlines, I described how to use morphlines scripts to parse JSON and syslog formatted text streams then display the parsed fields to *stdout*.  In Part 2, I'll show you how to build a morphlines parser that returns the parse fields to the application so they can be processed according to your requirements. If you haven't read [Part 1](/programming/log-parsing-with-morphlines-1){:target="_blank"}, you should do so before continuing because I'm going to make references to concepts covered there upon which I will not elaborate here.
 
 ## Morphlines Parser Classes
 
