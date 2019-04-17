@@ -1,6 +1,6 @@
 ## vichargrave.github.io
 
-Companion website for my Github projects, and other tech stuff.  Based on the **[Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes/)** theme.  If you want to build a theme similar to what I have, you should fork and adapt Minimal Mistakes and customize it.
+Companion website for my Github projects, and other tech stuff.  Based on the **[Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes/)** theme.  If you want to build a theme similar to what I have, you should fork Minimal Mistakes and customize it.
 
 ### Acknowledgements
 
