@@ -74,7 +74,96 @@ Each module contains a class that supports the given functionality. For sake of 
 
 ###  Tshark Wrapper
 
-Given the 
+The Tshark wrapper class is designed to invoke *tshark* in a separate process, then pipe its output to the caller.  We will define the path to *tshark* in the *espcap.yml* file that is located in a specific directory. Taking a slight detour here and jumping ahead a bit, the [Espcap](https://github.com/vichargrave/espcap){:target="_blank"} project is maintained in a Github repo that includes a *config* directory which contains *espcap.py*.  
+
+#### Class Initialization
+
+The Tshark class includes a member list that contains all the possible paths to *espcap.yml*.  There are additional members that contain the *tshark* command to run and the *Jsonifier* object which we will discuss later.  The first method in Tshark finds *espcap.yml* and sets a command member variable with the *tshark* path.  
+
+{% highlight python linenos %}
+class Tshark(object):
+    _jsonifier = Jsonifier()
+    _command = list()
+    _config_paths = ['espcap.yml','../config/espcap.yml','/etc/espcap/espcap.yml']
+
+    def __init__(self):
+        config = None
+        for config_path in self._config_paths:
+            if os.path.isfile(config_path):
+                with open(config_path, 'r') as ymlconfig:
+                    config = yaml.load(ymlconfig, Loader=yaml.FullLoader)
+                self._command.append(config['tshark_path'])
+                ymlconfig.close()
+                return
+        print("Could not find configuration file")
+        sys.exit(1)
+{% endhighlight %}
+
+If *espcap.yml* cannot be found, the application exits. When in doubt, just put *espcap.yml* in the same location and the **Espcap** program files
+
+
+#### Packet Capture Generators
+
+Next we define two methods to capture packets live from a network interface or from a set of PCAP files.  These methods are written as Python [generators](https://nvie.com/posts/iterators-vs-generators/){:target="blank"} that capture one packet at a time then *yield* each JSON formatted packet to the caller. 
+
+{% highlight python linenos %}
+    def file_capture(self, pcap_file):
+        global closing
+        command = self._make_command(nic=None, count=None, bpf=None, pcap_file=pcap_file, interfaces=None)
+        with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
+            packet = ''
+            for line in proc.stdout:
+                line, done = self._filter_line(line)
+                if done is False and line is None:
+                    continue
+                elif done is False and line is not None:
+                    packet += line
+                else:
+                    packet += line
+                    packet = self._format_packet(packet)
+                    yield packet
+                    packet = ''
+
+            if closing is True:
+                print('Capture interrupted')
+                sys.exit()
+
+    def live_capture(self, nic, count, bpf):
+        global closing
+        command = self._make_command(nic=nic, count=count, bpf=bpf, pcap_file=None, interfaces=False)
+        with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
+            packet = ''
+            for line in proc.stdout:
+                line, done = self._filter_line(line)
+                if done is False and line is None:
+                    continue
+                elif done is False and line is not None:
+                    packet += line
+                else:
+                    packet += line
+                    packet = self._format_packet(packet)
+                    yield packet
+                    packet = ''
+
+            if closing is True:
+                print('Capture interrupted')
+                sys.exit()
+{% endhighlight %}
+
+Note that these methods are identical except for the *tshark* command used that is constructed by the *_make_command()* method call in lines 4 and 24.  In the file capture case the only command option that matters is the path to the PCAP file.  All other arguments are set to *None*.  This creates a *tshark* command of the following form:
+```
+tshark -T json -r <PCAP file>
+```
+
+For live capture, the PCAP file argument is set to *None* and the other arguments are assigned values.  This creates a *tshark* command that looks like this:
+```
+tshark -i <interface> -T json  [-c <count>] [packet filter]
+```
+
+Note that if *count* is 0 the `-c <count>` part will be omitted from the command. This makes *tshark* run indefinitely. If the *bpf* argument is set to None, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
+
+#### Packet Formatting
+
 
 ###  JSON Conversion
 
