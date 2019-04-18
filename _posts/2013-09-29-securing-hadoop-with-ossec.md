@@ -5,7 +5,7 @@ classes: wide
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
+toc_label: <a href="#site-nav"><font color="#eadcb5">On This Page</font></a>
 header:
   image: /assets/images/Securing_Hadoop_with_OSSEC.png
   teaser: /assets/images/Securing_Hadoop_with_OSSEC.png

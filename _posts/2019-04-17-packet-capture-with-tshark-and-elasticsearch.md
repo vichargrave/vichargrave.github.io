@@ -5,7 +5,7 @@ classes: wide
 author_profile: false
 toc: true
 toc_sticky: true
-toc_label: <a href="#site-nav"><font color="#cca300">On This Page</font></a>
+toc_label: <a href="#site-nav"><font color="#eadcb5">On This Page</font></a>
 header:
   image: /assets/images/Packet_Capture_with_Wireshark_and_Elasticsearch.png
   teaser: /assets/images/Packet_Capture_with_Wireshark_and_Elasticsearch.png
@@ -59,7 +59,7 @@ Putting all of these options together, here are some examples of how to use *tsh
   ```
 
 
-## Espcap Appplication Structure
+## Espcap Application Structure
 
 ### Application Modules
 
@@ -84,7 +84,7 @@ Given the
 
 ### Main Application
 
-espcap.py supports these command line options:
+Espcap supports these command line options:
 
 - `--node`  – The IP address and port of the Elasticsearch instance where the packets will be indexed.
 - `--nic`   – The network interface that will be used for live capture
@@ -95,6 +95,7 @@ espcap.py supports these command line options:
 - `--count` – Number of packets to capture during live capture
 - `--list`  – Lists the network interfaces that can be used for live capture
 - `--help`  – Lists these program options
+
 
 
 ## Running Espcap with Elasticsearch
