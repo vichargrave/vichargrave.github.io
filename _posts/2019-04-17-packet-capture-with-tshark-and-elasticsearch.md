@@ -87,7 +87,7 @@ class Tshark(object):
     _config_paths = ['espcap.yml','../config/espcap.yml','/etc/espcap/espcap.yml']
 
     def __init__(self):
-        config = None
+        config = `None`
         for config_path in self._config_paths:
             if os.path.isfile(config_path):
                 with open(config_path, 'r') as ymlconfig:
@@ -109,14 +109,14 @@ Next we define two methods to capture packets live from a network interface or f
 {% highlight python linenos %}
     def file_capture(self, pcap_file):
         global closing
-        command = self._make_command(nic=None, count=None, bpf=None, pcap_file=pcap_file, interfaces=None)
+        command = self._make_command(nic=`None`, count=`None`, bpf=`None`, pcap_file=pcap_file, interfaces=`None`)
         with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
             packet = ''
             for line in proc.stdout:
                 line, done = self._filter_line(line)
-                if done is False and line is None:
+                if done is `False` and line is `None`:
                     continue
-                elif done is False and line is not None:
+                elif done is `False` and line is not `None`:
                     packet += line
                 else:
                     packet += line
@@ -124,46 +124,89 @@ Next we define two methods to capture packets live from a network interface or f
                     yield packet
                     packet = ''
 
-            if closing is True:
-                print('Capture interrupted')
-                sys.exit()
-
-    def live_capture(self, nic, count, bpf):
-        global closing
-        command = self._make_command(nic=nic, count=count, bpf=bpf, pcap_file=None, interfaces=False)
-        with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
-            packet = ''
-            for line in proc.stdout:
-                line, done = self._filter_line(line)
-                if done is False and line is None:
-                    continue
-                elif done is False and line is not None:
-                    packet += line
-                else:
-                    packet += line
-                    packet = self._format_packet(packet)
-                    yield packet
-                    packet = ''
-
-            if closing is True:
+            if closing is `True`:
                 print('Capture interrupted')
                 sys.exit()
 {% endhighlight %}
 
-Note that these methods are identical except for the *tshark* command used that is constructed by the *_make_command()* method call in lines 4 and 24.  In the file capture case the only command option that matters is the path to the PCAP file.  All other arguments are set to *None*.  This creates a *tshark* command of the following form:
+{% highlight python linenos %}
+    def live_capture(self, nic, count, bpf):
+        global closing
+        command = self._make_command(nic=nic, count=count, bpf=bpf, pcap_file=`None`, interfaces=`False`)
+        with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
+            packet = ''
+            for line in proc.stdout:
+                line, done = self._filter_line(line)
+                if done is `False` and line is `None`:
+                    continue
+                elif done is `False` and line is not `None`:
+                    packet += line
+                else:
+                    packet += line
+                    packet = self._format_packet(packet)
+                    yield packet
+                    packet = ''
+
+            if closing is `True`:
+                print('Capture interrupted')
+                sys.exit()
+{% endhighlight %}
+
+Both methods us `subprocess.Popen()` to execute a *tshark* command where the output is read line by line from `proc.stdout`. The only difference between the two methods is the *tshark* command that is constructed by the *_make_command()* method call in lines 4.  In the file capture case the only command option that matters is the path to the PCAP file.  All other arguments are set to *`None`*.  This creates a *tshark* command of the following form:
 ```
 tshark -T json -r <PCAP file>
 ```
 
-For live capture, the PCAP file argument is set to *None* and the other arguments are assigned values.  This creates a *tshark* command that looks like this:
+For live capture, the PCAP file argument is set to *`None`* and the other arguments are assigned values.  This creates a *tshark* command that looks like this:
 ```
 tshark -i <interface> -T json  [-c <count>] [packet filter]
 ```
 
-Note that if *count* is 0 the `-c <count>` part will be omitted from the command. This makes *tshark* run indefinitely. If the *bpf* argument is set to None, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
+Note that if *count* is 0 the `-c <count>` part will be omitted from the command. This makes *tshark* run indefinitely. If the *bpf* argument is set to `None`, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
 
-#### Packet Formatting
+As it turns out, *tshark* outputs JSON by placing each element on a separate line. Each packet is separated by a single comma on a line by itself.  This mode also includes Elasticsearch metadata fields that have to stripped out before indexing packets.  Here is an example of the beginning and ending of a JSON packet:
 
+{% highlight json linenos%}
+[
+  {
+    "_index": "packets-2019-04-18",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "en0"
+          },
+...
+  }
+  ,
+...
+{% endhighlight %}
+
+A new packet begins at line 16.  Ultimately what we want to index in Elasticsearch is the `layers` JSON object and all of is elements, stripping out lines like 1 - 6 and 14 - 15 from each packet. The *_filter_line()* method does par of the job by getting rid of any line that contains an open bracket `[`, a single comment with no other characters on the line, and any blank lines.   
+
+{% highlight python linenos %}
+    def _filter_line(self, line):
+        decoded_line = line.decode().rstrip('\n')
+        if decoded_line.startswith('[') is `True`:
+            return `None`, `False`
+        elif decoded_line.isspace() is `True` or \
+                len(decoded_line) == 0 or \
+                decoded_line.find(' ,') >= 0:
+            return `None`, `False`
+        elif decoded_line.startswith('  }') is `True`:
+            return decoded_line, `True`
+        else:
+            return decoded_line, `False`
+{% endhighlight %}
+
+This method drops objectionable lines returning `None` to indicated the line was dropped and `False` to indicate packet that the end of the packet has not been reached. If a given line does not have to be dropped, it is returned with the end of packet flag set to `False`. When an close curly brace by itself on a given line is encountered, this marks the end of the packet to the line is returned along with the end of packet flag set to `True`.
+
+#### Packet Construction
+
+Getting back to **file_capture()** and **live_capture**,
 
 ###  JSON Conversion
 
@@ -189,5 +232,11 @@ Espcap supports these command line options:
 
 ## Running Espcap with Elasticsearch
 
+### Download
+
 You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and cd into the *espcap/src* directory, then you can test the script with one of the test packet captures.
 
+### Test File Capture
+
+
+### Test Live Capture
