@@ -202,11 +202,29 @@ A new packet begins at line 16.  Ultimately what we want to index in Elasticsear
             return decoded_line, `False`
 {% endhighlight %}
 
-This method drops objectionable lines returning `None` to indicated the line was dropped and `False` to indicate packet that the end of the packet has not been reached. If a given line does not have to be dropped, it is returned with the end of packet flag set to `False`. When an close curly brace by itself on a given line is encountered, this marks the end of the packet to the line is returned along with the end of packet flag set to `True`.
+This method drops objectionable lines returning `None` to indicate the line was dropped and `False` to indicate packet that the end of the packet has not been reached. If a given line does not have to be dropped, it is returned with the end of packet flag set to `False`. When an close curly brace by itself on a given line is encountered, this marks the end of the packet to the line is returned along with the end of packet flag set to `True`.
 
 #### Packet Construction
 
-Getting back to **file_capture()** and **live_capture**,
+Getting back to *file_capture()* and *live_capture()*, in lines 8-9 for any JSON line that is dropped the code skips to get the next line.  Otherwise, if the line is OK and we are still building the packet, the lines is added to the the raw packet string. When the end of packet is reached, add the closed curly brace `}` and add it to the raw packet.  Then call *_format_packet()* to filter the unecessary Elasticsearch metafields and format the raw packet string into a JSON object.  Since these methods are generators, *yield* is called to return each packet so the flow of control can return to get more packets.  
+
+If the packet capture is interrupted somehow, *_exit_gracefully()* function is called to set the global *closing* flag to `True`.  This flag is checked after the current packet construction is done at which time the application is exited. ****
+
+{% highlight python linenos %}
+closing = False
+
+def _exit_gracefully(signum, frame):
+    global closing
+    closing = True
+{% endhighlight %}
+
+The *set_interrupt_handlers()* sets this function as the interrupt handler.
+
+{% highlight python linenos %}
+    def set_interrupt_handler(self):
+        signal.signal(signal.SIGTERM, _exit_gracefully)
+        signal.signal(signal.SIGINT, _exit_gracefully)
+{% endhighlight %}
 
 ###  JSON Conversion
 
@@ -232,7 +250,7 @@ Espcap supports these command line options:
 
 ## Running Espcap with Elasticsearch
 
-### Download
+### Download and Installation
 
 You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and cd into the *espcap/src* directory, then you can test the script with one of the test packet captures.
 
