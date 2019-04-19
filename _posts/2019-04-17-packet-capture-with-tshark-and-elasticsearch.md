@@ -25,9 +25,9 @@ The *Wireshark* command line application *tshark* works much like *tcpdum* with 
 
 *tshark* supports numerous options that control how it captures and handles packets. The options we are interested in using for **Espcap** include:
 
-- `-i <interface>` – The network interface, e.g. `en0` on MacOS, from where packets will be captured.
-- `-T json`        – Tells *tshark* to output JSON formatted packets
-- `-c <count>`     – The number of packets to capture.  If this option is omitted, *tshark* captures for an indefinite period of time. 
+- `-i <interface>` – The network interface from where packets will be captured.
+- `-T json`        – Output packet contents in JSON format.
+- `-c <count>`     – The number of packets to capture, if omitted capture packets indefinitely. 
 
 After one or more of these options are applied on the command line, you can add a packet filter expression to capture specific packets. For example, to get all TCP packets use the expression `tcp` or to capture DNS packets the expression is `udp port 53`. If no filter expression is included, all packates will be captured.
 
