@@ -206,7 +206,7 @@ This method drops objectionable lines returning `None` to indicate the line was 
 
 #### Packet Construction
 
-Getting back to *file_capture()* and *live_capture()*, in lines 8-9 for any JSON line that is dropped the code skips to get the next line.  Otherwise, if the line is OK and we are still building the packet, the lines is added to the the raw packet string. When the end of packet is reached, add the closed curly brace `}` and add it to the raw packet.  Then call *_format_packet()* to filter the unecessary Elasticsearch metafields and format the raw packet string into a JSON object.  Since these methods are generators, *yield* is called to return each packet so the flow of control can return to get more packets.  
+Getting back to *file_capture()* and *live_capture()*, in lines 8 - 9 for any JSON line that is dropped the code skips to get the next line.  Otherwise, if the line is OK and we are still building the packet, the lines is added to the the raw packet string. When the end of packet is reached, add the closed curly brace `}` and add it to the raw packet.  Then call *_format_packet()* to filter the unecessary Elasticsearch metafields and format the raw packet string into a JSON object.  Since these methods are generators, *yield* is called to return each packet so the flow of control can return to get more packets.  
 
 If the packet capture is interrupted somehow, *_exit_gracefully()* function is called to set the global *closing* flag to `True`.  This flag is checked after the current packet construction is done at which time the application is exited. ****
 
