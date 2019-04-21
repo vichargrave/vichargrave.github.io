@@ -74,7 +74,7 @@ Each module contains a class that supports the given functionality. For sake of 
 
 ###  Tshark Wrapper
 
-The Tshark wrapper class is designed to invoke *tshark* in a separate process, then pipe its output to the caller.  We will define the path to *tshark* in the *espcap.yml* file that is located in a specific directory. Taking a slight detour here and jumping ahead a bit, the [Espcap](https://github.com/vichargrave/espcap){:target="_blank"} project is maintained in a Github repo that includes a *config* directory which contains *espcap.py*.  
+The Tshark wrapper class is designed to invoke *tshark* in a separate process, then pipe its output to the caller.  We will define the path to *tshark* in the *espcap.yml* file that is located in a specific directory. Taking a slight detour here and jumping ahead a bit, the [Espcap](https://github.com/vichargrave/espcap){:target="_blank"} project is maintained in a Github repo that includes a *config* directory which contains *espcap.py*.
 
 #### Class Initialization
 
@@ -99,12 +99,11 @@ class Tshark(object):
         sys.exit(1)
 {% endhighlight %}
 
-If *espcap.yml* cannot be found, the application exits. When in doubt, just put *espcap.yml* in the same location and the **Espcap** program files
-
+If *espcap.yml* cannot be found, the application exits. When in doubt, just put *espcap.yml* in the same location and the **Espcap** program files. More on that later in the **Installation** section.
 
 #### Packet Capture Generators
 
-Next we define two methods to capture packets live from a network interface or from a set of PCAP files.  These methods are written as Python [generators](https://nvie.com/posts/iterators-vs-generators/){:target="blank"} that capture one packet at a time then *yield* each JSON formatted packet to the caller. 
+Next we define two methods to capture packets live from a network interface or from a set of PCAP files.  These methods are written as Python [generators](https://nvie.com/posts/iterators-vs-generators/){:target="blank"} that capture one packet at a time then *yield* each JSON formatted packet to the caller.  
 
 {% highlight python linenos %}
     def file_capture(self, pcap_file):
@@ -128,6 +127,7 @@ Next we define two methods to capture packets live from a network interface or f
                 print('Capture interrupted')
                 sys.exit()
 {% endhighlight %}
+
 
 {% highlight python linenos %}
     def live_capture(self, nic, count, bpf):
@@ -261,7 +261,7 @@ The `list_interfaces()` method handles this in fashion similar to the previous m
 
 ###  JSON Conversion
 
-The *Tshark._format_packet()* method removes extraneous Elasticsearch metafields with the *Jsonifier* class.
+The *_format_packet()* method removes extraneous Elasticsearch metafields with the *Jsonifier* class.
 
 When done, *Jsonifier.cleanse()*  will return a JSON packet dictionary that will yield JSON that looks like this:
 
@@ -279,11 +279,24 @@ When done, *Jsonifier.cleanse()*  will return a JSON packet dictionary that will
 
 ### Packet Indexing and Display
 
-With the packet JSON all nicely put together, the next step is to send them to Elasticsearch or, optionally, print them to `stdout` with the *Indexer* class methods.  
+Fully fledged JSON packet objects are handled by the *Indexer* methods, *dump_packets()* to print packets to `stdout` and *index_packet()* to index them in Elasticsearch.  Both methods process packets returned by either the live or file capture generators defined in the *Tshark* class.
+
+{% highlight python linenos%}
+    def dump_packets(self, capture):
+        pkt_no = 1
+        for packet in capture:
+            packet_timestamp = self._get_timestamp(packet)
+            print('Packet no.', pkt_no)
+            print('* packet date UTC  -', datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'))
+            print('* payload - ', packet)
+            pkt_no += 1
+{% endhighlight %}
+
+*index_packets()* is another generator function 
 
 {% highlight python linenos%}
 class Indexer(object):
-    def index_packets(self, capture, pcap_file, create_date_utc):
+    def index_packets(self, capture, pcap_file):
         for packet in capture:
             packet_timestamp = self._get_timestamp(packet)  # use this field for ordering the packets in ES
             if pcap_file is None:
@@ -293,7 +306,6 @@ class Indexer(object):
                     '_type': 'espcap',
                     '_source': {
                         'capture': 'live',
-                        'create_date_utc': create_date_utc.strftime('%Y-%m-%dT%H:%M:%S'),
                         'packet_date_utc': datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'),
                         'layers': packet['layers']
                     }
@@ -306,23 +318,11 @@ class Indexer(object):
                     '_source': {
                         'capture': 'file',
                         'file_name': pcap_file,
-                        'create_date_utc': create_date_utc.strftime('%Y-%m-%dT%H:%M:%S'),
                         'packet_date_utc': datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'),
                         'layers': packet['layers']
                     }
                 }
             yield action
-{% endhighlight %}
-
-{% highlight python linenos%}
-    def dump_packets(self, capture, create_date_utc):
-        pkt_no = 1
-        for packet in capture:
-            packet_timestamp = self._get_timestamp(packet)
-            print('Packet no.', pkt_no)
-            print('* create date UTC   -', create_date_utc.strftime('%Y-%m-%dT%H:%M:%S+0000'))
-            print('* packet date UTC  -', datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'))
-            print('* payload - ', packet)
 {% endhighlight %}
 
 
@@ -331,7 +331,6 @@ class Indexer(object):
         timestamp = (packet['layers']['frame']['frame_time_epoch']).split('.')
         return int(timestamp[0])
 {% endhighlight %}
-
 
 
 ### Main Application
@@ -371,11 +370,10 @@ We'll skip sorting through through the arguments. You can do that when you downl
 def init_live_capture(es, tshark, indexer, nic, bpf, chunk, count):
     try:
         capture = tshark.live_capture(nic=nic, bpf=bpf, count=count)
-        create_date_utc = datetime.utcnow()
         if es is None:
-            indexer.dump_packets(capture=capture, create_date_utc=create_date_utc)
+            indexer.dump_packets(capture=capture)
         else:
-            helpers.bulk(es, indexer.index_packets(capture, None, create_date_utc), chunk_size=chunk, raise_on_error=True)
+            helpers.bulk(client=es, actions=indexer.index_packets(capture, None), chunk_size=chunk, raise_on_error=True)
 
     except Exception as e:
         print('[ERROR] ', e)
@@ -388,13 +386,10 @@ def init_file_capture(es, tshark, indexer, pcap_files, chunk):
         print('Loading packet capture file(s)')
         for pcap_file in pcap_files:
             print(pcap_file)
-            stats = os.stat(pcap_file)
-            create_date_utc = datetime.utcfromtimestamp(stats.st_ctime)
-            capture = tshark.file_capture(pcap_file)
             if es is None:
-                indexer.dump_packets(capture=capture, create_date_utc=create_date_utc)
+                indexer.dump_packets(capture=capture)
             else:
-                helpers.bulk(es, indexer.index_packets(capture, pcap_file, create_date_utc), chunk_size=chunk, raise_on_error=True)
+                helpers.bulk(clint=es, actions=indexer.index_packets(capture, pcap_file), chunk_size=chunk, raise_on_error=True)
 
     except Exception as e:
         print('[ERROR] ', e)
@@ -413,7 +408,7 @@ from elasticsearch import helpers
 
 You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and *cd* into the *espcap/src* directory, then run `python -r requirements.txt` to install the `elasticsearch` and `click` modules.  You may choose to this in a virtual environment, if you don't plan on doing anything else with these modules.
 
-Open *config/espap.yml* file then set the `tshark_path` field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn emntire;ly new location, add that path to the `Tshark._config_paths` list. 
+Open *config/espap.yml* file then set the `tshark_path` field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn entirely new location, add that path to the `_config_paths` list. 
 
 ### Test File Capture
 
