@@ -316,11 +316,6 @@ class Indexer(object):
 
 {% highlight python linenos%}
     def dump_packets(self, capture, create_date_utc):
-        """ Dump packets generator method that prints packets to stdout.
-
-        :param capture: Series of packets captured by the Tshark object.
-        :param create_date_utc: Date the PCAP file or live capture was created
-        """
         pkt_no = 1
         for packet in capture:
             packet_timestamp = self._get_timestamp(packet)
