@@ -152,7 +152,7 @@ Next we define two methods to capture packets live from a network interface or f
                 sys.exit()
 {% endhighlight %}
 
-Both methods us `subprocess.Popen()` to execute a *tshark* command where the output is read line by line from `proc.stdout`. The only difference between the two methods is the *tshark* command that is constructed by the *_make_command()* method call in lines 4.  In the file capture case the only command option that matters is the path to the PCAP file.  All other arguments are set to *`None`*.  This creates a *tshark* command of the following form:
+Both methods use `subprocess.Popen()` to execute a *tshark* command where the output is read line by line from `proc.stdout`. The only difference between the two methods is the *tshark* command that is constructed by the *_make_command()* method call in lines 4.  In the file capture case the only command option that matters is the path to the PCAP file.  All other arguments are set to *`None`*.  This creates a *tshark* command of the following form:
 ```
 tshark -T json -r <PCAP file>
 ```
@@ -164,7 +164,7 @@ tshark -i <interface> -T json  [-c <count>] [packet filter]
 
 Note that if *count* is 0 the `-c <count>` part will be omitted from the command. This makes *tshark* run indefinitely. If the *bpf* argument is set to `None`, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
 
-As it turns out, *tshark* outputs JSON by placing each element on a separate line. Each packet is separated by a single comma on a line by itself.  This mode also includes Elasticsearch metadata fields that have to stripped out before indexing packets.  Here is an example of the beginning and ending of a JSON packet:
+As it turns out, *tshark* outputs JSON by placing each element on a separate line. Each packet is separated by a single comma on a line by itself, as shown the example below. Notice this mode also includes Elasticsearch metadata fields, which are undesirable and must be deleted.
 
 {% highlight json linenos%}
 [
@@ -182,10 +182,26 @@ As it turns out, *tshark* outputs JSON by placing each element on a separate lin
 ...
   }
   ,
+  {
+    "_index": "packets-2019-04-18",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "en0"
+          },
+...
+  }
+  ,
 ...
 {% endhighlight %}
 
-A new packet begins at line 16.  Ultimately what we want to index in Elasticsearch is the `layers` JSON object and all of is elements, stripping out lines like 1 - 6 and 14 - 15 from each packet. The *_filter_line()* method does par of the job by getting rid of any line that contains an open bracket `[`, a single comment with no other characters on the line, and any blank lines.   
+A new packet begins at line 16.  Ultimately what we want to index in Elasticsearch is the `layers` JSON object. The Elasticsearch metafields produced by *tshark* in lines 5 - 6 must be filtered out since they will be set by Elasticsearch when packets are indexed.  The leading bracket and opening curly brace in lines 1 and 2 must go as well as the trailing curly brace and comma in lines 14 and 15. 
+
+The *_filter_line()* method does part of the job by getting rid of any line that contains an open bracket `[`, a single comment with no other characters on the line, and any blank lines.   
 
 {% highlight python linenos %}
     def _filter_line(self, line):
@@ -202,13 +218,13 @@ A new packet begins at line 16.  Ultimately what we want to index in Elasticsear
             return decoded_line, `False`
 {% endhighlight %}
 
-This method drops objectionable lines returning `None` to indicate the line was dropped and `False` to indicate packet that the end of the packet has not been reached. If a given line does not have to be dropped, it is returned with the end of packet flag set to `False`. When an close curly brace by itself on a given line is encountered, this marks the end of the packet to the line is returned along with the end of packet flag set to `True`.
+This method drops objectionable lines returning `None` to indicate the line was dropped and `False` to indicate packet that the end of the packet has not been reached. If a given line does not have to be dropped, it is returned with the end of packet flag set to `False`. When a close curly brace by itself on a given line is encountered we have a full packet packet.  The line is then returned along with the end of packet flag set to `True`. 
 
 #### Packet Construction
 
-Getting back to *file_capture()* and *live_capture()*, in lines 8 - 9 for any JSON line that is dropped the code skips to get the next line.  Otherwise, if the line is OK and we are still building the packet, the lines is added to the the raw packet string. When the end of packet is reached, add the closed curly brace `}` and add it to the raw packet.  Then call *_format_packet()* to filter the unecessary Elasticsearch metafields and format the raw packet string into a JSON object.  Since these methods are generators, *yield* is called to return each packet so the flow of control can return to get more packets.  
+Getting back to *file_capture()* and *live_capture()*, in lines 8 - 9 for any JSON line that is dropped the code skips to get the next line.  Otherwise, if the line is OK and we are still building the packet, the line is added to the the raw packet string. When the end of packet is reached, add the closed curly brace `}` and add it to the raw packet.  Then call *_format_packet()* to filter the unnecessary Elasticsearch metafields and format the raw packet string into a JSON object.  This method will be discussed in the next section.  Since these methods are generators, *yield* is called to return each packet so the flow of control can return to get more packets.  
 
-If the packet capture is interrupted somehow, *_exit_gracefully()* function is called to set the global *closing* flag to `True`.  This flag is checked after the current packet construction is done at which time the application is exited. ****
+If the packet capture is interrupted somehow, *_exit_gracefully()* function is called to set the global *closing* flag to `True`.  This flag is checked after the current packet construction is done at which time the application is exited.
 
 {% highlight python linenos %}
 closing = False
@@ -226,35 +242,216 @@ The *set_interrupt_handlers()* sets this function as the interrupt handler.
         signal.signal(signal.SIGINT, _exit_gracefully)
 {% endhighlight %}
 
+#### List Network Interfaces
+
+The last *tshark* modality is listing all the network interfaces.  This can be done with with the command:
+```
+tshark --list
+```  
+
+The `list_interfaces()` method handles this in fashion similar to the previous methods:
+
+{% highlight python linenos%}
+    def list_interfaces(self):
+        command = self._make_command(nic=None, count=None, bpf=None, pcap_file=None, interfaces=True)
+        with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1) as proc:
+            for interface in proc.stdout:
+                print(interface.decode().rstrip('\n'))
+{% endhighlight %}
+
 ###  JSON Conversion
 
+The *Tshark._format_packet()* method removes extraneous Elasticsearch metafields with the *Jsonifier* class.
 
-### Packet Indexing
+When done, *Jsonifier.cleanse()*  will return a JSON packet dictionary that will yield JSON that looks like this:
+
+{% highlight json%}
+{
+  "layers": {
+    "frame": {
+      "frame.interface_id": "0",
+       "frame.interface_id_tree": {
+         "frame.interface_name": "en0"
+       },
+...
+ }
+{% endhighlight %}
+
+### Packet Indexing and Display
+
+With the packet JSON all nicely put together, the next step is to send them to Elasticsearch or, optionally, print them to `stdout` with the *Indexer* class methods.  
+
+{% highlight python linenos%}
+class Indexer(object):
+    def index_packets(self, capture, pcap_file, create_date_utc):
+        for packet in capture:
+            packet_timestamp = self._get_timestamp(packet)  # use this field for ordering the packets in ES
+            if pcap_file is None:
+                action = {
+                    '_op_type': 'index',
+                    '_index': 'packets-' + datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%d'),
+                    '_type': 'espcap',
+                    '_source': {
+                        'capture': 'live',
+                        'create_date_utc': create_date_utc.strftime('%Y-%m-%dT%H:%M:%S'),
+                        'packet_date_utc': datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'),
+                        'layers': packet['layers']
+                    }
+                }
+            else:
+                action = {
+                    '_op_type': 'index',
+                    '_index': 'packets-' + datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%d'),
+                    '_type': 'espcap',
+                    '_source': {
+                        'capture': 'file',
+                        'file_name': pcap_file,
+                        'create_date_utc': create_date_utc.strftime('%Y-%m-%dT%H:%M:%S'),
+                        'packet_date_utc': datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'),
+                        'layers': packet['layers']
+                    }
+                }
+            yield action
+{% endhighlight %}
+
+{% highlight python linenos%}
+    def dump_packets(self, capture, create_date_utc):
+        """ Dump packets generator method that prints packets to stdout.
+
+        :param capture: Series of packets captured by the Tshark object.
+        :param create_date_utc: Date the PCAP file or live capture was created
+        """
+        pkt_no = 1
+        for packet in capture:
+            packet_timestamp = self._get_timestamp(packet)
+            print('Packet no.', pkt_no)
+            print('* create date UTC   -', create_date_utc.strftime('%Y-%m-%dT%H:%M:%S+0000'))
+            print('* packet date UTC  -', datetime.utcfromtimestamp(packet_timestamp).strftime('%Y-%m-%dT%H:%M:%S+0000'))
+            print('* payload - ', packet)
+{% endhighlight %}
+
+
+{% highlight python linenos%}
+    def _get_timestamp(self, packet):
+        timestamp = (packet['layers']['frame']['frame_time_epoch']).split('.')
+        return int(timestamp[0])
+{% endhighlight %}
+
 
 
 ### Main Application
 
-Espcap supports these command line options:
+#### Display and Process Line Options
 
-- `--node`  – The IP address and port of the Elasticsearch instance where the packets will be indexed.
-- `--nic`   – The network interface that will be used for live capture
-- `--file`  – The PCAP file that containing the packets that will be loaded
-- `--dir`   – Directory containin several PCAP files that will be read anf processed
-- `--bpf`   – Packet filter expression to select the packets you want to capture
-- `--chunk` – Sets the number of packets to bulk index in Elasticsearch
-- `--count` – Number of packets to capture during live capture
-- `--list`  – Lists the network interfaces that can be used for live capture
-- `--help`  – Lists these program options
+The main application is responsible for getting the command line options then initiating live or file packet capture. We use the `click` module to display and gather the command line options:
 
+{% highlight python %}
+@click.command()
+@click.option('--node', default=None, help='Elasticsearch IP and port (default=None, dump packets to stdout)')
+@click.option('--nic', default=None, help='Network interface for live capture (default=None, if file or dir specified)')
+@click.option('--file', default=None, help='PCAP file for file capture (default=None, if nic specified)')
+@click.option('--dir', default=None, help='PCAP directory for multiple file capture (default=None, if nic specified)')
+@click.option('--bpf', default=None, help='Packet filter for live capture (default=all packets)')
+@click.option('--chunk', default=1000, help='Number of packets to bulk index (default=1000)')
+@click.option('--count', default=0, help='Number of packets to capture during live capture (default=0, capture indefinitely)')
+@click.option('--list', is_flag=True, help='Lists the network interfaces')
+{% endhighlight %}
+
+The program is initialized by creating the `Tshark` and `Indexer` objects followed by connecting to Elasticsearch and setting the interrupt handler provided by `Tshark`.  If the `node` argument is not present, we set the Elasticsearch handle to `None`, which indicates to the downstream code that we are going to dump the packets to `stdout`
+
+{% highlight python linenos%}
+    indexer = Indexer()
+    tshark = Tshark()
+    es = None
+    if node is not None:
+        es = Elasticsearch(node)
+    tshark.set_interrupt_handler()
+{% endhighlight %}
+
+We'll skip sorting through through the arguments. You can do that when you download the code.  Instead, let's finish up the discussion of the code with the functions that initialize packet capture.
+
+#### Initialize Packet Capture
+
+{% highlight python %}
+def init_live_capture(es, tshark, indexer, nic, bpf, chunk, count):
+    try:
+        capture = tshark.live_capture(nic=nic, bpf=bpf, count=count)
+        create_date_utc = datetime.utcnow()
+        if es is None:
+            indexer.dump_packets(capture=capture, create_date_utc=create_date_utc)
+        else:
+            helpers.bulk(es, indexer.index_packets(capture, None, create_date_utc), chunk_size=chunk, raise_on_error=True)
+
+    except Exception as e:
+        print('[ERROR] ', e)
+        syslog.syslog(syslog.LOG_ERR, e)
+{% endhighlight %}
+
+{% highlight python %}
+def init_file_capture(es, tshark, indexer, pcap_files, chunk):
+    try:
+        print('Loading packet capture file(s)')
+        for pcap_file in pcap_files:
+            print(pcap_file)
+            stats = os.stat(pcap_file)
+            create_date_utc = datetime.utcfromtimestamp(stats.st_ctime)
+            capture = tshark.file_capture(pcap_file)
+            if es is None:
+                indexer.dump_packets(capture=capture, create_date_utc=create_date_utc)
+            else:
+                helpers.bulk(es, indexer.index_packets(capture, pcap_file, create_date_utc), chunk_size=chunk, raise_on_error=True)
+
+    except Exception as e:
+        print('[ERROR] ', e)
+        syslog.syslog(syslog.LOG_ERR, e)
+{% endhighlight %}
+
+{% highlight python %}
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers
+{% endhighlight %}
 
 
 ## Running Espcap with Elasticsearch
 
-### Download and Installation
+### Installation
 
-You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and cd into the *espcap/src* directory, then you can test the script with one of the test packet captures.
+You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and *cd* into the *espcap/src* directory, then run `python -r requirements.txt` to install the `elasticsearch` and `click` modules.  You may choose to this in a virtual environment, if you don't plan on doing anything else with these modules.
+
+Open *config/espap.yml* file then set the `tshark_path` field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn emntire;ly new location, add that path to the `Tshark._config_paths` list. 
 
 ### Test File Capture
 
+Now you ready to capture some packets. Let's start with file capture mode and print the output to `stdout`.  *cd* into the *src* directory, then run *espcap.py* like this:
+```
+./espcap.py --file=../test_pcaps/test_dns.pcap
+``` 
+
+or like this to read all the packet capture files:
+```
+./espcap.py --dir=../test_pcaps
+```
+
+To test packet capture with indexing, start up a local instance of Elasticsearch or use a remote instance if you have one.  Although it's not absolutely necessary, it's a good idea to set up a packets index template to set the date formats to be consistent with the format used in *Tshark*.  If you are using a local Elasticsearch instance, run the *template.sh* script for Elasticsearch 7:
+```
+../scripts/template.sh localhost:9200
+```
+
+If you are running Elasticsearch 6.x, use the *template-6.x.sh* script instead.  Then run *espcap.puy as follows:
+```
+./epcap.py --node:localhost:9200 --file-../test_pcaps/test_http.pcap
+```
+
+You can verify the packet were indexed by running a query to get all packets in the `packets-*` indexes or run the *packet_query.sh* script:
+```
+../scripts/packet_query.sh localhost:9200
+``` 
 
 ### Test Live Capture
+
+Last but certainly not least, you'll want to try live capture.  For example, if you want to capture 300 inbound and outbound TCP packets for a server using port 443 (https) from the `en0 network interface, run *espcap.py* like this:
+```
+./espcap.py --node=localhost:9200 --interface=en0 --count=3000 --bpf="tcp port 443"
+``` 
+
+To run this packet capture indefinitely, omit the `--count` argument. Note the rules and formatting of the packet filter expression `--bpf` are determined by *tshark* since this argument string is passed directly to the command.
