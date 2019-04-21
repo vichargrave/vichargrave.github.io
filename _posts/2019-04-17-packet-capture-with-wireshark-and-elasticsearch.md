@@ -261,9 +261,62 @@ The `list_interfaces()` method handles this in fashion similar to the previous m
 
 ###  JSON Conversion
 
-The *_format_packet()* method removes extraneous Elasticsearch metafields with the *Jsonifier* class.
+*Tshark._format_packet()* relies on the *Jsonifier* class to remove extraneous Elasticsearch metafields and assemble an Elasticsearch compatible JSON object.  *cleanse()* takes the raw packet string, converts it to a JSON dictionary object, and calls *_filter_es_meta()*.
 
-When done, *Jsonifier.cleanse()*  will return a JSON packet dictionary that will yield JSON that looks like this:
+{% highlight python linenos %}
+class Jsonifier(object):
+
+    def cleanse(self, raw_packet):
+        try:
+            unfiltered_json_packet = json.loads(raw_packet)
+            final_json_packet = self._filter_es_meta(unfiltered_json_packet)
+            return final_json_packet
+
+        except Exception as e:
+            print("Error processing the input: ", e)
+            return None
+{% endhighlight %}
+
+*_filter_es_meta()* removes the keys marked "_index", "_type", and "_score" with calls to *pop()* list function. Next we want to extract the true packet contents within the `_spurce` item in the JSON packet object with a call to *_dot_to_underscore()*
+
+{% highlight python linenos %}
+    def _filter_es_meta(self, unfiltered_json_packet):
+        filter_keys = ["_index", "_type", "_score"]
+
+        for item in filter_keys:
+            unfiltered_json_packet.pop(item, None)
+
+        if "_source" in unfiltered_json_packet:
+            final_json_packet = self._dot_to_underscore(unfiltered_json_packet["_source"])
+
+        return final_json_packet
+{% endhighlight %}
+
+The *tshark* JSON output mode has the habit of creating duplicating these keys in the body of the packet: `ip.addr`, `ip.host`, `udp.port`, and `tcp.port`. This unfortunate tendency is a bug that renders the JSON invalid, not to mentions that the keys aren't necessary since *tshark* separately outputs the source and destination IP addresses and hosts as well as the source and destination TCP and UDP ports. *_dots_to_underscores()* filters out the duplicate keys.
+
+{% highlight python linenos %}
+    def _dot_to_underscore(self, _source_json_packet):
+        filter_keys = ["ip.addr", "ip.host", "udp.port", "tcp.port"]
+        final_json_packet = dict()
+
+        for item in filter_keys:
+            _source_json_packet.pop(item, None)
+
+        for key, value in _source_json_packet.items():
+            updated_key = key.replace(".", "_")
+            final_json_packet[updated_key] = value
+
+            if isinstance(value, dict):
+                new_value = self._dot_to_underscore(value)
+                if not len(new_value):
+                    final_json_packet.pop(updated_key, None)
+                else:
+                    final_json_packet[updated_key] = new_value
+
+        return final_json_packet
+{% endhighlight %}
+
+*tshark* JSON output mode also uses periods in the keys, which is not allowed by Elasticsearch, so the dots are replaced by underscores. When done, *_dot_to_underscores()*  returns an Elasticsearch compatible JSON packet dictionary that will yield JSON looking like this:
 
 {% highlight json%}
 {
@@ -331,7 +384,6 @@ class Indexer(object):
         timestamp = (packet['layers']['frame']['frame_time_epoch']).split('.')
         return int(timestamp[0])
 {% endhighlight %}
-
 
 ### Main Application
 
