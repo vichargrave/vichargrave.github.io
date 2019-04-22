@@ -292,7 +292,7 @@ class Jsonifier(object):
         return final_json_packet
 {% endhighlight %}
 
-The *tshark* JSON output mode has the habit of creating duplicating these keys in the body of the packet: `ip.addr`, `ip.host`, `udp.port`, and `tcp.port`. This unfortunate tendency is a bug that renders the JSON invalid, not to mentions that the keys aren't necessary since *tshark* separately outputs the source and destination IP addresses and hosts as well as the source and destination TCP and UDP ports. *_dots_to_underscores()* filters out the duplicate keys.
+The *tshark* JSON output mode has the habit of  duplicating `ip.addr`, `ip.host`, `udp.port`, and `tcp.port` keys in the body of the packet. This unfortunate tendency is a bug that renders the JSON invalid, not to mentions that the keys aren't necessary since *tshark* separately outputs the source and destination IP addresses and hosts as well as the source and destination TCP and UDP ports. *_dots_to_underscores()* filters out the duplicate keys.
 
 {% highlight python linenos %}
     def _dot_to_underscore(self, _source_json_packet):
@@ -332,7 +332,7 @@ The *tshark* JSON output mode has the habit of creating duplicating these keys i
 
 ### Packet Indexing and Display
 
-Fully fledged JSON packet objects are handled by the *Indexer* methods, *dump_packets()* to print packets to `stdout` and *index_packet()* to index them in Elasticsearch.  Both methods process packets returned by either the live or file capture generators defined in the *Tshark* class.
+Elasticsearch compatible JSON packet dictionaries are handled by the *Indexer* methods, *dump_packets()* to print packets to `stdout` and *index_packet()* to index them in Elasticsearch.  Both methods process packets returned by either the live or file capture generators defined in the *Tshark* class.
 
 {% highlight python linenos%}
     def dump_packets(self, capture):
@@ -345,7 +345,14 @@ Fully fledged JSON packet objects are handled by the *Indexer* methods, *dump_pa
             pkt_no += 1
 {% endhighlight %}
 
-*index_packets()* is another generator function 
+*index_packets()* is another generator function that builds and returns `action` JSON objects to the Elasticsearch Python client helper function to bulk index packets in Elasticsearch.  See the ** Main Appliation ** section for more details. Action objects consist of these fields:
+
+- `_opt_type` – Elasticsearch operation to perform, `index` in this case.
+- `_index`    – Name of the index. The naming convention is `packets-yyyy-mm-dd`.
+- `_type`     – The index type, `espcap` for both live and file capture.
+- `_source`   – The JSON body of the packet.
+
+To the packet `_source` we add the type of capture, `live` or `file`, the packet creation date in UTC provided by *_get_timestamp()*, and the packet content itself.  File capture packets have same action format as live capture, except with an additional field that records the UTC date that the PCAP file was created.
 
 {% highlight python linenos%}
 class Indexer(object):
@@ -378,6 +385,7 @@ class Indexer(object):
             yield action
 {% endhighlight %}
 
+Both capture methods call *_get_timesamp()* to extract the packet creation time in milliseconds from the packet `frame`. 
 
 {% highlight python linenos%}
     def _get_timestamp(self, packet):
@@ -418,41 +426,49 @@ We'll skip sorting through through the arguments. You can do that when you downl
 
 #### Initialize Packet Capture
 
-{% highlight python %}
+We have all the building blocks we need to do packet capture and indexing, all that's left is to get the packet capture going. For that we define two functions, *init_live_capture()* and *init_file_capture()*. The first function creates a live capture session with a call to *Tshark.live_capture()* given a network interface, packet filter, and packet count. To print out the packets, we just pass the `capture` object to *Indexer.dump_packets()*. 
+ 
+{% highlight python linenos %}
 def init_live_capture(es, tshark, indexer, nic, bpf, chunk, count):
     try:
         capture = tshark.live_capture(nic=nic, bpf=bpf, count=count)
         if es is None:
             indexer.dump_packets(capture=capture)
         else:
-            helpers.bulk(client=es, actions=indexer.index_packets(capture, None), chunk_size=chunk, raise_on_error=True)
+            helpers.bulk(client=es, actions=indexer.index_packets(capture=capture, pcap_file=None), chunk_size=chunk, raise_on_error=True)
 
     except Exception as e:
         print('[ERROR] ', e)
         syslog.syslog(syslog.LOG_ERR, e)
 {% endhighlight %}
 
-{% highlight python %}
+For live capture we use *helpers.bulk()* Elasticearch Python client function, which does all the heavy lifting to bulk index the packets in Elasticsearch. The method accepts the handle to the Elasticsearch cluster we want to use for indexing, the actions produced by the *Indexer.index_packets()* generator, the number of packets (chunk) to bulk index to Elasticsearch at a time, and whether or not exceptions will be raised for failures during bulk indexing. As we saw earlier, *Indexer.index_packets()* accepts a `capture` object and `None` for the PCAP file argument since this is a live capture.
+
+*init_file_capture()* works pretty much the same way, except it can process one or more PCAP files. For each file a `cpature` object is created then passed to *Indexer.dump_packets()* or *Indexer.index_packets()*. In the latter case, the PCAP file path is passed in so it can be recorded in the packets index. 
+
+{% highlight python linenos %}
 def init_file_capture(es, tshark, indexer, pcap_files, chunk):
     try:
         print('Loading packet capture file(s)')
         for pcap_file in pcap_files:
             print(pcap_file)
+            capture = tshark.file_capture(pcap_file)
             if es is None:
                 indexer.dump_packets(capture=capture)
             else:
-                helpers.bulk(clint=es, actions=indexer.index_packets(capture, pcap_file), chunk_size=chunk, raise_on_error=True)
+                helpers.bulk(client=es, actions=indexer.index_packets(capture=capture, pcap_file=pcap_file), chunk_size=chunk, raise_on_error=True)
 
     except Exception as e:
         print('[ERROR] ', e)
         syslog.syslog(syslog.LOG_ERR, e)
 {% endhighlight %}
 
-{% highlight python %}
+It's worth noting that the Elasticsearch Python client is made available with these imports:
+
+{% highlight python linenos %}
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 {% endhighlight %}
-
 
 ## Running Espcap with Elasticsearch
 
