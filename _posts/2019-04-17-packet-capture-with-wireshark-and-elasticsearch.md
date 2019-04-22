@@ -517,3 +517,5 @@ To run this packet capture indefinitely, omit the `--count` argument. Note the r
 ## Summing Up
 
 **Escpap** illustrates how to use some interesting Python features, most notably iterator functions. The Elasticsearch Python client API makes good use of iterators in the bulk indexing helper functions. Iterators made it possible to delegate packet capture to our generator functions for live and file capture then continually pass back packets to the packet indexing function, which is itself a generator that conveys the packets to the Elasticsearch client bulk indexing function. This chain of functions runs concurrently to provide a stream of packets to Elasticsearch.
+
+**Espcap** pumps packets direclty into Elasticsearch. You could also send them to Logstash or NiFi, both of which provide transformation and resiliancy features that would enhance the packet streaming. Like Logstahs, Nifi contains plugins that enable to index directly in Elasticsearch.  
