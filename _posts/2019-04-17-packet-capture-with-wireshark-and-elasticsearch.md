@@ -513,3 +513,7 @@ Last but certainly not least, you'll want to try live capture.  For example, if 
 ``` 
 
 To run this packet capture indefinitely, omit the `--count` argument. Note the rules and formatting of the packet filter expression `--bpf` are determined by *tshark* since this argument string is passed directly to the command.
+
+## Summing Up
+
+**Escpap** illustrates how to use some interesting Python features, most notably iterator functions. The Elasticsearch Python client API makes good use of iterators in the bulk indexing helper functions. Iterators made it possible to delegate packet capture to our generator functions for live and file capture then continually pass back packets to the packet indexing function, which is itself a generator that conveys the packets to the Elasticsearch client bulk indexing function. This chain of functions runs concurrently to provide a stream of packets to Elasticsearch.
