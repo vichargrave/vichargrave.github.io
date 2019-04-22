@@ -444,7 +444,7 @@ def init_live_capture(es, tshark, indexer, nic, bpf, chunk, count):
 
 For live capture we use *helpers.bulk()* Elasticearch Python client function, which does all the heavy lifting to bulk index the packets in Elasticsearch. The method accepts the handle to the Elasticsearch cluster we want to use for indexing, the actions produced by the *Indexer.index_packets()* generator, the number of packets (chunk) to bulk index to Elasticsearch at a time, and whether or not exceptions will be raised for failures during bulk indexing. As we saw earlier, *Indexer.index_packets()* accepts a `capture` object and `None` for the PCAP file argument since this is a live capture.
 
-*init_file_capture()* works pretty much the same way, except it can process one or more PCAP files. For each file a `cpature` object is created then passed to *Indexer.dump_packets()* or *Indexer.index_packets()*. In the latter case, the PCAP file path is passed in so it can be recorded in the packets index. 
+*init_file_capture()* works pretty much the same way, except it can process one or more PCAP files. For each file a `capture` object is created then passed to *Indexer.dump_packets()* or *Indexer.index_packets()*. In the latter case, the PCAP file path is passed in so it can be recorded in the packets index. 
 
 {% highlight python linenos %}
 def init_file_capture(es, tshark, indexer, pcap_files, chunk):
