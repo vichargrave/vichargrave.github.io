@@ -332,6 +332,8 @@ The *tshark* JSON output mode has the habit of  duplicating `ip.addr`, `ip.host`
 
 ### Packet Indexing and Display
 
+When indexing packets in Elasticsearch, the indexer will create new index is created for each day. The index naming format is _packets-yyyy-mm-dd_. The index type is `espcap` for both live and file capture. Note that Elasticsearch 7 and later only allow one`_type` field per index.  The index field `capture` is set to `live` for live capture and `file` for file capture. File captures have an additional field `file_name` that is set to the PCAP file from where the packets were read. Index IDs are automatically assigned by Elasticsearch.
+
 Elasticsearch compatible JSON packet dictionaries are handled by the *Indexer* methods, *dump_packets()* to print packets to `stdout` and *index_packet()* to index them in Elasticsearch.  Both methods process packets returned by either the live or file capture generators defined in the *Tshark* class.
 
 {% highlight python linenos%}
@@ -345,7 +347,7 @@ Elasticsearch compatible JSON packet dictionaries are handled by the *Indexer* m
             pkt_no += 1
 {% endhighlight %}
 
-*index_packets()* is another generator function that builds and returns `action` JSON objects to the Elasticsearch Python client helper function to bulk index packets in Elasticsearch.  See the ** Main Appliation ** section for more details. Action objects consist of these fields:
+*index_packets()* is another generator function that builds and returns `action` JSON objects to the Elasticsearch Python client helper function to bulk index packets in Elasticsearch.  See the ** Main Application ** section for more details. Action objects consist of these fields:
 
 - `_opt_type` – Elasticsearch operation to perform, `index` in this case.
 - `_index`    – Name of the index. The naming convention is `packets-yyyy-mm-dd`.
