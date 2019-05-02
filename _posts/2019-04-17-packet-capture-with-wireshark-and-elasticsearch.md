@@ -19,7 +19,7 @@ tags:
 
 Network packet capture and analysis are commonly done with tools like *tcpdump*, *snort*, and *Wireshark*. These tools provide the capability to capture packets live from networks and store the captures in PCAP files for later analysis. A much better way to store packets is to index them in Elasticsearch where you can easily search for packets based on any combination of packet fields.
 
-The *Wireshark* command line application *tshark* works much like *tcpdump* with the added capabilities to recognize a wide range of protocols as well as output captured packets in JSON format. This output capability makes it a natural to use with Elasticsearch. I developed the Python application **Espcap** to ciphon off JSON packets from *tshark* then send them to Elasticsearch to be indexed. This article discusses the design and usage of **Espcap**. 
+The *Wireshark* command line application *tshark* works much like *tcpdump* with the added capabilities to recognize a wide range of protocols as well as output captured packets in JSON format. This output capability makes it a natural to use with Elasticsearch. I developed the Python application **Espcap** to take advantage of this capability to ciphon off JSON packets from *tshark* then send them to Elasticsearch to be indexed. This article discusses the design and usage of **Espcap**. 
 
 ## Packet Capture with Tshark
 
@@ -29,10 +29,10 @@ The *Wireshark* command line application *tshark* works much like *tcpdump* with
 - `-T ek`          – Output packet contents in Elasticsearch compatible JSON format.
 - `-c <count>`     – The number of packets to capture, if omitted capture packets indefinitely. 
 
-After one or more of these options are applied on the command line, you can add a packet filter expression to capture specific packets. For example, to get all TCP packets use the expression `tcp` or to capture DNS packets the expression is `udp port 53`. If no filter expression is included, all packets will be captured.
+Following one or more of these options on the command line, you can add a packet filter expression to capture specific packets. For example, to get all TCP packets use the expression `tcp` or to capture DNS packets the expression is `udp port 53`. 
 
 
-Putting all of these options together, here are some examples of how to use *tshark* to do various captures. All of the examples assume formatting output packets as Elasticsearch compatible JSON and running on MacOS with network interface `en0`. If running on Linux, you would use `eth0` instead.
+Here are some examples of how to use *tshark* to do various captures. All of the examples assume formatting output packets as Elasticsearch compatible JSON and running on MacOS with network interface `en0`. If running on Linux, you would use `eth0` instead.
 
 - All outbound and inbound HTTPs packets.
 
@@ -69,11 +69,9 @@ Espcap is organized into these four modules representing the functional areas of
 - `indexer.py`   – Indexes packets in Elasticsearch or prints the packets 
 - `espcap.py`    – Main program that accepts program arguments and initiates packet capture
 
-Each module contains a class that supports the given functionality.
+###  Tshark API Wrapper
 
-###  Tshark Wrapper
-
-The Tshark wrapper class is designed to invoke *tshark* in a separate process, then pipe its output to the caller.  The path to the *tshark* executable is set in the *espcap.yml* file. Taking a slight detour here and jumping ahead a bit, the [Espcap](https://github.com/vichargrave/espcap){:target="_blank"} project is maintained in a Github repo that includes a *config* directory which contains *espcap.py*.
+The Tshark API wrapper class is designed to invoke *tshark* in a separate process, then pipe its output to the caller.  The path to the *tshark* executable is set in the *espcap.yml* file. Taking a slight detour here and jumping ahead a bit, the [Espcap](https://github.com/vichargrave/espcap){:target="_blank"} project is maintained in a Github repo that includes a *config* directory which contains *espcap.py*.
 
 #### Class Initialization
 
@@ -87,11 +85,12 @@ import os
 import yaml
 import json
 
-class Tshark(object):
-    _config_paths = ['espcap.yml','../config/espcap.yml','/etc/espcap/espcap.yml']
-    _command = list()
+class Tshark(object): 
 
     def __init__(self):
+        _config_paths = ['espcap.yml','../config/espcap.yml','/etc/espcap/espcap.yml']
+        _command = list()
+        
         config = `None`
         for config_path in self._config_paths:
             if os.path.isfile(config_path):
@@ -108,7 +107,7 @@ If *espcap.yml* cannot be found, the application exits. When in doubt, just put 
 
 #### Command Construction
 
-The commands supported by **Espcap** include live packet capture, capture from PCAP files, and listing all possible network interfaces, which are done with these *tshark* command lines, respectively:
+The commands supported by **Espcap** include live packet capture, capture from PCAP files, and listing all possible network interfaces, are done with these *tshark* command lines, respectively:
 
 ```
 tshark -T ek  -i <interface> [-c <count>] [packet filter]
@@ -116,7 +115,7 @@ tshark -T ek -r <PCAP file>
 tshark -D
 ```
 
-If *count* is 0 the `-c <count>` part will be omitted from the command. This makes *tshark* run indefinitely. Also, if the *bpf* argument absent, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
+When *count* is 0 the `-c <count>` part will be omitted from the command and *tshark* run indefinitely. Also, if the *bpf* argument absent, the `[packet filter]` part of the command is left out and *tshark* captures all packets. 
 
 *tshark* commands are constructed with the *mark_command()* method: 
 
@@ -127,7 +126,7 @@ If *count* is 0 the `-c <count>` part will be omitted from the command. This mak
         if interfaces is True:
             command.append('-D')
             return command
-
+    
         command.append('-T')
         command.append('ek')
         if nic is not None:
@@ -143,11 +142,11 @@ If *count* is 0 the `-c <count>` part will be omitted from the command. This mak
         if pcap_file is not None:
             command.append('-r')
             command.append(pcap_file)
-
+    
         return command
 {% endhighlight %}
 
-If the *tshark* command line option `-D` is passed in the *interfaces* argument, it is append to the *command* and the *make_commands()* returns immediately.  Otherwise, any other arguments are appended to the *command*.  In both cases the command string is returned to the caller.  
+If the *tshark* command line option `-D` is used, it is append to the *command* and the *make_commands()* returns the command string immediately.  Otherwise, all other arguments are appended to the *command* then it is returned.  *make_command()* does not check to see whether the mutually exclusive *nic* and *pcap_file* are both not equal to `None` since that situation is prevented by application earlir in the program flow.
 
 #### Packet Capture Generators
 
@@ -178,7 +177,7 @@ Output from *tshark* with the *-T ek* option for each packet contains two lines,
 {"timestamp":"1556728888362","layers":{ <packet fields> }}
 ```
 
-The first line in each response is not needed because the application will use the Elasticsearch Python Client API to create the bulk index commands.  *_drop_index_line()* is called in line 5 to take care of removing the index command lines.  It returns `None` if an index command was dropped or the packet contents if not. Each packet JSON string is converted to a JSON dictionary object then returned in line 9.
+The first line in each response can be dropped because the application will use the Elasticsearch Python Client API to create the bulk index commands.  *_drop_index_line()* is called in line 5 to take care of removing the index command lines.  It returns `None` if an index command was dropped or the packet contents if not. Each packet JSON string is converted to a JSON dictionary object then returned in lines 8 and it 9.
 
 {% highlight python linenos %}
     def _drop_index_line(self, line):
@@ -222,9 +221,9 @@ The *set_interrupt_handlers()* sets this function as the interrupt handler.
 
 ### Packet Indexing and Display
 
-When indexing packets in Elasticsearch, the indexer will create new index is created for each day. The index naming format is _packets-yyyy-mm-dd_. The index type is `espcap` for both live and file capture. Note that Elasticsearch 7 and later only allow one`_type` field per index. Index IDs are automatically assigned by Elasticsearch.
+When indexing packets in Elasticsearch, a new index is created every day. The index naming format is _packets-yyyy-mm-dd_. Note that Elasticsearch 7 and later only allows one *_type* field per index. Index IDs are automatically assigned by Elasticsearch.
 
-Elasticsearch compatible JSON packet dictionaries are handled with two functions: *index_packet()* to index them in Elasticsearch *dump_packets()* to print packets to `stdout`.  *index_packets()* is another generator function that builds and returns `action` JSON objects to the Elasticsearch Python Client API helper function to bulk index packets in Elasticsearch. See the **Main Application** section for more details. 
+Elasticsearch compatible JSON packet dictionaries are handled with two functions: *index_packet()* to index them in Elasticsearch and *dump_packets()* to print packets to *stdout*.  *index_packets()* is another generator function that builds and returns *action* JSON objects to the Elasticsearch Python Client API helper function to bulk index packets in Elasticsearch. See the **Main Application** section for more details. 
 
 {% highlight python linenos %}
 from datetime import datetime
@@ -302,30 +301,30 @@ def main(node, nic, file, dir, bpf, chunk, count, list):
         es = None
         if node is not None:
             es = Elasticsearch(node)
-
+    
         if list:
             command = tshark.make_command(nic=None, count=0, bpf=None, pcap_file=None, interfaces=True)
             tshark.list_interfaces(command)
             sys.exit(0)
-
+    
         if nic is None and file is None and dir is None:
             print('You must specify either file or live capture')
             sys.exit(1)
-
+    
         if nic is not None and (file is not None or dir is not None):
             print('You cannot specify file and live capture at the same time')
             sys.exit(1)
-
+    
         syslog.syslog("espcap started")
-
+    
         if nic is not None:
             init_live_capture(es=es, tshark=tshark, nic=nic, bpf=bpf, chunk=chunk, count=count)
-
+    
         elif file is not None:
             pcap_files = []
             pcap_files.append(file)
             init_file_capture(es=es, tshark=tshark, pcap_files=pcap_files, chunk=chunk)
-
+    
         elif dir is not None:
             pcap_files = []
             files = os.listdir(dir)
@@ -333,7 +332,7 @@ def main(node, nic, file, dir, bpf, chunk, count, list):
             for file in files:
                 pcap_files.append(dir+'/'+file)
             init_file_capture(es=es, tshark=tshark, pcap_files=pcap_files, chunk=chunk)
-
+    
     except Exception as e:
         print('[ERROR] ', e)
         syslog.syslog(syslog.LOG_ERR, e)
@@ -359,7 +358,7 @@ if __name__ == '__main__':
 #### Initiate Packet Capture
 
 Packet capture is initiated with two functions, *init_live_capture()* and *init_file_capture()*. The first function creates a live capture session with a call to *Tshark.live_capture()* given a network interface, packet filter, and packet count. To print out the packets, we just pass the `capture` object to *dump_packets()*. 
- 
+
 {% highlight python linenos %}
 def init_live_capture(es, tshark, nic, bpf, chunk, count):
     try:
@@ -376,7 +375,7 @@ def init_live_capture(es, tshark, nic, bpf, chunk, count):
         sys.ext(1)
 {% endhighlight %}
 
-The *helpers.bulk()* Elasticearch Python client function, which does all the heavy lifting to bulk index the packets in Elasticsearch. The method accepts a handle to the Elasticsearch cluster we want to use for indexing, the actions produced by the *index_packets()* generator, the number of packets (chunk) to bulk index to Elasticsearch at a time, and whether or not exceptions will be raised for failures during bulk indexing. As we saw earlier, *index_packets()* accepts a `capture` iterable.
+The *helpers.bulk()* Elasticearch Python client function does all the heavy lifting to bulk index the packets in Elasticsearch. It accepts a handle to the Elasticsearch cluster we want to use for indexing, the actions produced by the *index_packets()* generator, the number of packets (chunk) to bulk index to Elasticsearch at a time, and whether or not exceptions will be raised for failures during bulk indexing. As we saw earlier, *index_packets()* accepts a `capture` iterable.
 
 *init_file_capture()* works pretty much the same way, except it processes one or more PCAP files. For each file a `capture` object is created then passed to either of the indexer functions. *init_file_capture()* handles one file at a time, creating a separate capture for each, from the list of files passed to it.
 
@@ -403,16 +402,16 @@ def init_file_capture(es, tshark, pcap_files, chunk):
 
 ### Installation
 
-You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and *cd* into the *espcap/src* directory, then run `python -r requirements.txt` to install the `elasticsearch` and `click` modules.  You may choose to this in a virtual environment, if you don't plan on doing anything else with these modules.
+You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and *cd* into the *espcap/src* directory, then run `python -r requirements.txt` to install the *elasticsearch* and *click* modules.  You may choose to this in a virtual environment, if you don't plan on doing anything else with these modules.
 
-Open *config/espap.yml* file then set the `tshark_path` field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn entirely new location, add that path to the `_config_paths` list. 
+Open *config/espap.yml* file then set the *tshark_path* field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn entirely new location, add that path to the *_config_paths* list. 
 
 ### Test File Capture
 
-Now you ready to capture some packets. Let's start with file capture mode and print the output to `stdout`.  *cd* into the *src* directory, then run *espcap.py* like this:
+Now you ready to capture some packets. Let's start with file capture mode and print the output to *stdout*.  *cd* into the *src* directory, then run *espcap.py* like this:
  ```
 ./espcap.py --file=../test_pcaps/test_dns.pcap
-``` 
+ ```
 
 or like this to read all the packet capture files:
 ```
@@ -432,14 +431,14 @@ If you are running Elasticsearch 6.x, use the *packet_template-6.x.sh* script in
 You can verify the packet were indexed by running a query to get all packets in the `packets-*` indexes or run the *packet_query.sh* script:
 ```
 ../scripts/packet_query.sh localhost:9200
-``` 
+```
 
 ### Test Live Capture
 
 Last but certainly not least, you'll want to try live capture.  For example, if you want to capture 300 inbound and outbound TCP packets for a server using port 443 (https) from the `en0 network interface, run *espcap.py* like this:
 ```
 ./espcap.py --node=localhost:9200 --interface=en0 --count=3000 --bpf="tcp port 443"
-``` 
+```
 
 To run this packet capture indefinitely, omit the `--count` argument or set it to 0, the default. The rules and formatting of the packet filter expression `--bpf` are determined by *tshark* since this argument string is passed directly to the command.
 
