@@ -107,7 +107,7 @@ If *espcap.yml* cannot be found, the application exits. When in doubt, just put 
 
 #### Command Construction
 
-The commands supported by **Espcap** include live packet capture, capture from PCAP files, and listing all possible network interfaces, are done with these *tshark* command lines, respectively:
+The commands supported by **Espcap** include live packet capture, capture from PCAP files, and listing all possible network interfaces. The following *tshark* command lines handle each of these use cases, respectively:
 
 ```
 tshark -T ek  -i <interface> [-c <count>] [packet filter]
