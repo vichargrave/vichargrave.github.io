@@ -404,7 +404,7 @@ def init_file_capture(es, tshark, pcap_files, chunk):
 
 You can download from Github at [https://github.com/vichargrave/espcap](https://github.com/vichargrave/espcap){:target="_blank"}. Just clone the repo and *cd* into the *espcap/src* directory, then run `python -r requirements.txt` to install the *elasticsearch* and *click* modules.  You may choose to this in a virtual environment, if you don't plan on doing anything else with these modules.
 
-Open *config/espap.yml* file then set the *tshark_path* field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in amn entirely new location, add that path to the *_config_paths* list. 
+Open *config/espap.yml* file then set the *tshark_path* field to the localion of your *tshark* instance. If you move the **Espcap** source files to a different location, you might want to just place *espcap.yml* in the same location as the application files. If you want to put the file in an entirely new location, add that path to the *_config_paths* list. 
 
 ### Test File Capture
 
