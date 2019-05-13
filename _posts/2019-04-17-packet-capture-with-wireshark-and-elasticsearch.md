@@ -425,7 +425,7 @@ To test packet capture with indexing, start up a local instance of Elasticsearch
 
 If you are running Elasticsearch 6.x, use the *packet_template-6.x.sh* script instead.  Next run *espcap.py* as follows:
 ```
-./epcap.py --node:localhost:9200 --file-../test_pcaps/test_http.pcap
+./epcap.py --node=localhost:9200 --file=../test_pcaps/test_http.pcap
 ```
 
 You can verify the packet were indexed by running a query to get all packets in the `packets-*` indexes or run the *packet_query.sh* script:
