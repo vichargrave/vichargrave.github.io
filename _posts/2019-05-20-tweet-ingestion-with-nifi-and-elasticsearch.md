@@ -28,6 +28,32 @@ After downloading and unpacking the *NiFi* binary package, go to the NiFi direct
 
 ![NiFi_blank_canvas](/assets/images/NiFi_blank_canvas.png)
 
+## Install Elasticsearch
+
+If you don't already have Elasticsearch, you can install it on your local system with these commands:
+
+{% highlight bash %}
+mkdir elasticsearch-example
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.0-linux-x86_64.tar.gz
+tar -xzf elasticsearch-7.1.0.tar.gz
+{% endhighlight %}
+
+For the Mac use this *wget* command instead:
+
+{% highlight bash %}
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.0-linux-x86_64.tar.gz
+{% endhighlight %}
+
+You can run Elasticsearch from the command line like this:
+
+{% highlight bash %}
+
+./elasticsearch-7.1.0/bin/elasticsearch
+
+{% endhighlight %}
+
+By default, Elasticsearch listens for requests on port 9200.
+
 ## Twitter Data Pipeline
 
 NiFi data pipelines consist of one or more *processors* that are connected together to ingest, filter/enrich data, and output data to some sort of storage medium. At the very least there must be an ingestion processor that pipes sends data to an output processor. Filtering and enriching processors are optional, but more often than not you need these intermediate processors to clean and map the data you want to end up with.
@@ -181,8 +207,6 @@ Enter `tweet-nifi` in the *Process Group Name* text box, then click on *Add* to 
 
 ![Nifi_tweet_nifi_group](/assets/images/Nifi_tweet_nifi_group.png)
 
-To start the tweet ingestion and indexing, click on the play button in the *Operate* box. Before running the pipeline though, it would be a good idea to explicitly map the tweet fields in the Elasticsearch.
-
 The final step in building the pipeline is to save it as a template.  Click on *Create Template* button in the *Originate* panel, then enter template name `tweet-nifi` , and click on the *Create* button. If at a later time you want to load the twiiter data pipeline tempalte and run it again, drag the *Template* button from the top toolbar and select the `tweet-nifi` template.
 
 ![Nifi_add_template](/assets/images/Nifi_add_template.png){:width="80%" .align-center}
@@ -302,3 +326,65 @@ The `node` argument for this script refers to the Elasticsearch IP and port, e.g
 The index pattern is set to `tweets-*` in lines 13 - 15,  meaning that the mapping will be applied to any tweet index that has a name the begins with `tweet-`.  Numerical and boolean tweet fields are mapped accordingly.  All other text and date fields are mapped as text and include an additional keyword field for sorting.
 
 Run this script for the Elasticsearch instance you are using, then the mapping template will be set to go.
+
+## Run the Data Pipeline
+
+To start the tweet ingestion and indexing, click on the play button in the *Operate* box. After running the piepline for several minutes, you can run a query to check that tweets were indexed. Run a *curl* command like this:
+
+{% highlight bash  %}
+
+curl http://localhost:9200/tweets\*/_search\?pretty
+
+{% endhighlight %}
+
+The output of this command should look like this:
+
+{% highlight bash  %}
+
+{
+  "took" : 4565,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 10000,
+      "relation" : "gte"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "tweets-2019-05-25",
+        "_type" : "_doc",
+        "_id" : "xS_P8WoBB9fmJNnwbj2e",
+        "_score" : 1.0,
+        "_source" : {
+          "created_at" : "Sun May 26 01:44:12 +0000 2019",
+          "timestamp_ms" : "1558835052659",
+          "id_str" : "1132462407165632512",
+          "text" : "RT @startrekcbs: 25 years after #StarTrek #TNG ended, a new chapter begins. #StarTrekPicard starring @SirPatStew is coming soon to @CBSAllA…",
+          "source" : "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+          "favorited" : false,
+          "retweeted" : false,
+          "lang" : "en",
+          "user_id_str" : "15274698",
+          "user_name" : "Colby Ringeisen",
+          "user_screen_name" : "colbyringeisen",
+          "user_description" : "Software Engineer in #ATx, #Longhorns fan, dog owner, mountain biker #mtb, part-time hermit",
+          "user_verified" : false,
+          "users_followers_count" : 120,
+          "users_friends_count" : 361,
+          "users_listed_count" : 9,
+          "user_favourites_count" : 49,
+          "user_created_at" : "Mon Jun 30 00:43:06 +0000 2008",
+          "user_lang" : null
+        }
+      },
+
+...
+
+{% endhighlight %}
