@@ -9,13 +9,13 @@ These are my sample code projects on Github and their corresponding blog posts. 
 
 | Project              | Description                 |
 | -------------------- | --------------------------- |
-| [condvar](https://github.com/vichargrave/condvar){:target="_blank"} | Example code from [Condition Variable Class in C++](/programming/condition-variable-class-in-cpp/){:target="_blank"}.
-| [espcap](https://github.com/vichargrave/espcap){:target="_blank"} | Example code from [Packet Capture with Wireshark and Elasticsearch](/programming/packet-capture-with-wireshark-and-elasticsearch/){:target="_blank"}.
-| [getsomerest](https://github.com/vichargrave/getsomerest){:target="_blank"} | Example code from [RESTful Web Services with Jersey](/tutorials/restful-webservices-with-jersey/){:target="_blank"}.
+| [condvar](https://github.com/vichargrave/condvar){:target="_blank"} | Example code for [Condition Variable Class in C++](/programming/condition-variable-class-in-cpp/){:target="_blank"}.
+| [espcap](https://github.com/vichargrave/espcap){:target="_blank"} | Example code for [Packet Capture with Wireshark and Elasticsearch](/programming/packet-capture-with-wireshark-and-elasticsearch/){:target="_blank"}.
+| [getsomerest](https://github.com/vichargrave/getsomerest){:target="_blank"} | Example code for [RESTful Web Services with Jersey](/tutorials/restful-webservices-with-jersey/){:target="_blank"}.
 | [mau](https://github.com/vichargrave/mau){:target="_blank"} | Oh My Zsh theme with a little cat twist (no blog for this one). 
-| [mtserver](https://github.com/vichargrave/mtserver){:target="_blank"} | Example code from [Multithreaded Work Queue Based Server in C++](/programming/multithreaded-work-queue-based-server-in-cpp){:target="_blank"}.
-| [mutex](https://github.com/vichargrave/mutex){:target="_blank"} | Example code from [Mutex Class in C++](/programming/mutex-class-in-cpp/){:target="_blank"}.
-| [rlist](https://github.com/vichargrave/rlist){:target="_blank"} | Example code from [Reverse a Singly Linked List](/programming/reversing-a-singly-linked-list/){:target="_blank"}.
+| [mtserver](https://github.com/vichargrave/mtserver){:target="_blank"} | Example code for [Multithreaded Work Queue Based Server in C++](/programming/multithreaded-work-queue-based-server-in-cpp){:target="_blank"}.
+| [mutex](https://github.com/vichargrave/mutex){:target="_blank"} | Example code for [Mutex Class in C++](/programming/mutex-class-in-cpp/){:target="_blank"}.
+| [rlist](https://github.com/vichargrave/rlist){:target="_blank"} | Example code for [Reverse a Singly Linked List](/programming/reversing-a-singly-linked-list/){:target="_blank"}.
 | [sniffer](https://github.com/vichargrave/sniffer){:target="_blank"} |  Example code for [Develop a Packet Sniffer with Libpcap](/programming/develop-a-packet-sniffer-with-libpcap/){:target="_blank"}.
 | [tcpsockets](https://github.com/vichargrave/tcpsockets){:target="_blank"} | Example code for [TCP/IP Network Programming Design Patterns in C++](/programming/tcp-ip-network-programming-design-patterns-in-cpp/){:target="_blank"} and [TCP/IP Sockets with Time Out Capabilities](/programming/tcp-ip-sockets-with-time-out-capabilties/){:target="blank"}.
 | [threads](https://github.com/vichargrave/threads){:target="_blank"} | Example code for [Java Style Threads Class in C++](/programming/java-style-thread-class-in-cpp/){:target="_blank"}.
