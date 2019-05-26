@@ -26,7 +26,7 @@ You can get NiFi by building from [source](https://github.com/apache/nifi){:targ
 
 After downloading and unpacking the *NiFi* binary package, go to the NiFi directory and run `bin/nifi.sh start`.  It will take a coulple of miniutes for *NiFi* to start. When is running open the NiFi console at *http://localhsot:8080/nifi* in a browser. The default listening port 8080 can be changed by setting the `nifi.web.http.port` field in the *conf/nifi.properties* configuration file. You should get a blank console canvas that looks like this:
 
-![NiFi_blank_canvas](/assets/images/NiFi_blank_canvas.png)
+![Nifi_blank_canvas](/assets/images/Nifi_blank_canvas.png)
 
 ## Install Elasticsearch
 
