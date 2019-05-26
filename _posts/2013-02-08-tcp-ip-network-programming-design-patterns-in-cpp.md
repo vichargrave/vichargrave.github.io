@@ -1,5 +1,5 @@
 ---
-title:  "TCP/IP Network Programming Design Pattens in C++"
+title:  "TCP/IP Network Programming Design Patterns in C++"
 date:   2013-02-08 12:40:37
 classes: wide
 author_profile: false
@@ -7,8 +7,8 @@ toc: true
 toc_sticky: true
 toc_label: <a href="#site-nav"><font color="#eadcb5">On This Page</font></a>
 header:
-  image: /assets/images/TCPIP_Network_Programming_Design_Pattens_in_C++.png
-  teaser: /assets/images/TCPIP_Network_Programming_Design_Pattens_in_C++.png
+  image: /assets/images/TCPIP_Network_Programming_Design_Patterns_in_C++.png
+  teaser: /assets/images/TCPIP_Network_Programming_Design_Patterns_in_C++.png
 categories: 
   - Programming
 tags: 
