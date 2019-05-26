@@ -1,6 +1,7 @@
 ---
 title: "Projects"
 permalink: /projects/
+classes: wide
 ---
 ## Github Repos
 
