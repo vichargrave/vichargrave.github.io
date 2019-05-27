@@ -327,6 +327,12 @@ The index pattern is set to `tweets-*` in lines 13 - 15,  meaning that the mappi
 
 Run this script for the Elasticsearch instance you are using, then the mapping template will be set to go.
 
+{% highlight bash  %}
+
+./tweets_template.sh localhost:9200
+
+{% endhighlight %}
+
 ## Run the Data Pipeline
 
 To start the tweet ingestion and indexing, click on the play button in the *Operate* box. After running the piepline for several minutes, you can run a query to check that tweets were indexed. Run a *curl* command like this:
@@ -388,3 +394,9 @@ The output of this command should look like this:
 ...
 
 {% endhighlight %}
+
+## Summing Up
+
+Now that you have a basic working NiFi data pipeline, there are several things you can explreo to improve it. If you want to expand the number of tweet fields you ingest, you can add the field maps to the *JoltTransformJson* processor and the *tweets_template.sh* .  
+
+Running NiFI and Elasticsearch on a single system may cause the NiFi queues to hit a critical point and bog down considerably. It's possible to run NiFi on a cluster of systems to get better throughput. It might also be a good idea to run Elasticsearch on a separate cluster. 
