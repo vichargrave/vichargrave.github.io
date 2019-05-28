@@ -11,7 +11,7 @@ permalink: /about/
 
 Welcome to my website which is the companion to my code contributions on [Github](https://github.com/vichargrave){:target="_blank"}. I write blogs describing my code and system designs that I've used in the hope that they will help people with their own development projects.
 
-For many years I programmed with C++, but these days my interests revolve around search and analytics which involve more Java and Python progrmming.
+For many years I programmed with C++, but these days my interests revolve around search and analytics which involve mostly Python and, to a lesser extent, Java programming.  
 
 When I'm not slaving away over a hot keyboard - yes I do have a life outside technology - I like spending time with my family, cooking, going to theater and movies. My family and I are cat lovers and spend time fostering semi-feral cats for future adoption - more on that later.
 
@@ -45,11 +45,11 @@ At any rate, many thanks for visiting my website. I hope you find my code projec
 
 ## Acknowledgements
 
-Thanks to [Github](https://github.com){:target="blank"} for providing free website hosting with support for the [Jekyll](https://jekyllrb.com/){:target="blank"} framework.  
+Thanks to **[Github**](https://github.com){:target="blank"} for providing free website hosting with support for the **[Jekyll**](https://jekyllrb.com/){:target="blank"} framework.  
 
 Special thanks to **[Michael Rose](https://github.com/mmistakes/){:target="_blank"}** for creating the **[Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes/){:target="_blank"}** theme, with which I built this website.
 
-Another special thanks to the folks of the [pandapower development team at the University of Kassel](https://github.com/e2nIEE) for the sidebar CSS that enables this site to put the article table of contents sections on the left side of the page in place of the author attribution.
+Another special thanks to the folks of the **[pandapower development team at the University of Kassel**](https://github.com/e2nIEE){:target="_blank"}**  for the sidebar CSS that enables this site to put the article table of contents sections on the left side of the page in place of the author attribution.
 
 Finally, thanks to **[Dryicons](https://dryicons.com/icon-packs/handy-icons-set){:target="_blank"}** for my home page icons. 
 
