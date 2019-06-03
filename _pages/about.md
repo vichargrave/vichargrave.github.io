@@ -31,7 +31,7 @@ My family and I are very much into cats. We have 4 of our own. We also work wi
 
 ## Free Stuff Licensing
 
-You can find most of the code from this site on [Github](https://github.com/vichargrave?tab=repositories){:target="_blank"}. All of the code is licensed according to the [Apache License, Version 2.0]("http://www.apache.org/licenses/LICENSE-2.0.html){:target="_blank"}. You are free to use it how ever you want. I've made every effort to test the code so it works according to the tests outlined in each blog. However, I take no responsibility for its suitability or use as stated in the Apache License.
+All of my code is licensed according to the [Apache License, Version 2.0]("http://www.apache.org/licenses/LICENSE-2.0.html){:target="_blank"}. You are free to use it how ever you want. I've made every effort to test the code so it works according to the tests outlined in each blog. However, I take no responsibility for its suitability or use as stated in the Apache License.
 
 ## Helping You Figure Stuff Out
 
