@@ -326,7 +326,7 @@ int main(int argc, char** argv)
 
 ### Build and Run
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/xmldom.git](https://github.com/vichargrave/xmldom.git){:target="_blank"}. To build it just cd into the project directory and type make.
+You can get the source code for the project from Github – [https://github.com/vichargrave/xmldom](https://github.com/vichargrave/xmldom){:target="_blank"}. To build it just cd into the project directory and type make.
 
 After building the test app run it as follows:
 
