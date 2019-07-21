@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
 ### Build and Run
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/rlist.git](https://github.com/vichargrave/rlist.git){:target="_blank"}. To build the test application just cd into the `rlist` directory then run *make*.
+You can get the source code for the project from Github – [https://github.com/vichargrave/rlist](https://github.com/vichargrave/rlist){:target="_blank"}. To build the test application just cd into the `rlist` directory then run *make*.
 
 When you run the program you will get this output:
 
