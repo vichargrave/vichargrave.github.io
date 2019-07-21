@@ -183,7 +183,7 @@ public class ParseTest {
 
 ### Build and Run
 
-You can get the code for the project at Github – [https://github.com/vichargrave/xmldom-java.git](https://github.com/vichargrave/xmldom-java.git){:target="_blank"}. You’ll need NetBeans 7.3 to build the project. Follow these instructions to build and run the test application:
+You can get the code for the project at Github – [https://github.com/vichargrave/xmldom-java](https://github.com/vichargrave/xmldom-java){:target="_blank"}. You’ll need NetBeans 7.3 to build the project. Follow these instructions to build and run the test application:
 
 1. Right click on the **xmldom-java** project.
 2, Select **Run**.
