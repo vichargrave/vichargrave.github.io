@@ -208,7 +208,7 @@ Each time through the main loop, 3 items are placed in the queue. After the spec
 
 ### Build and Run
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/wqueue.git](https://github.com/vichargrave/wqueue.git){:target="_blank"}. The `main()` routine, work item class and consumer thread class definitions are all contained in the main.cpp file. You can build the test application by going into the wqueue directory and running make. Note that you must get the [Thread class code](/articles/2012-12/java-style-thread-class-in-cpp){:target="_blank"} before trying to make wqueue.
+You can get the source code for the project from Github – [https://github.com/vichargrave/wqueue](https://github.com/vichargrave/wqueue){:target="_blank"}. The `main()` routine, work item class and consumer thread class definitions are all contained in the main.cpp file. You can build the test application by going into the wqueue directory and running make. Note that you must get the [Thread class code](/articles/2012-12/java-style-thread-class-in-cpp){:target="_blank"} before trying to make wqueue.
 
 If you run the test application with an argument of 3 this is what the output will look like:
 
