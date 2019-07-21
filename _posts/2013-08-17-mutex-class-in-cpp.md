@@ -73,7 +73,7 @@ class Mutex
 
 ## Mutex Test Application
 
-You can get the source code for this project from GitHub – [https://github.com/vichargrave/mutex.git](https://github.com/vichargrave/mutex.git){:target="_blank"}.
+You can get the source code for this project from GitHub – [https://github.com/vichargrave/mutex](https://github.com/vichargrave/mutex){:target="_blank"}.
 
 The `Mutex` class test program relies on my `Thread` class which I wrote about awhile back. The application declares a MutexTest thread class which works with the `main()` thread to lock a single `Mutex` object.
 

@@ -374,7 +374,7 @@ void bailout(int signo)
 
 ## Build and Run the Sniffer
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/sniffer.git](https://github.com/vichargrave/sniffer.git){:target="_blank"}. To build it just cd into the project directory and type make.
+You can get the source code for the project from Github – [https://github.com/vichargrave/sniffer](https://github.com/vichargrave/sniffer){:target="_blank"}. To build it just cd into the project directory and type make.
 
 To test the sniffer application, let’s get all the traffic between the local system and Google. First we load a filter into sniffer that looks for any TCP packets with a source or destination port of 80. Note we need to run sniffer as root, Then we open a browser to [http://www.google.com](http://www.google.com){:target="_blank"}. The output should something like the following. As you can see my browser client – `192.168.1.105` – first starts the connection by going through the TCP handshaking by exchaning SYN and ACK packets. Then data transfer follows as evidenced by the PSH packets.
 

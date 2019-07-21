@@ -235,7 +235,7 @@ int main(int argc, char** argv)
 
 ### Build and Run
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/threads.git](https://github.com/vichargrave/threads.git){:target="_blank"}. To build it just *cd* into the project directory and type *make*.
+You can get the source code for the project from Github – [https://github.com/vichargrave/threads](https://github.com/vichargrave/threads){:target="_blank"}. To build it just *cd* into the project directory and type *make*.
 
 Running the app will produce the following output:
 

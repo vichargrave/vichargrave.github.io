@@ -9,11 +9,11 @@ permalink: /about/
 > __-- Sheldon Cooper__
 
 
-Welcome to my website which is the companion to my code contributions on [Github](https://github.com/vichargrave){:target="_blank"}. I write blogs describing my code and system designs that I've used in the hope that they will help people with their own development projects.
+Welcome to my website which is the companion to my code contributions on [Github](https://github.com/vichargrave){:target="_blank"}. 
 
-For many years I programmed with C++, but these days my interests revolve around search and analytics which involve mostly Python and, to a lesser extent, Java programming.  
+I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering. I'm also a contributor to the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} with their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
 
-When I'm not slaving away over a hot keyboard - yes I do have a life outside technology - I like spending time with my family, cooking, going to theater and movies. My family and I are cat lovers and spend time fostering semi-feral cats for future adoption - more on that later.
+When I’m not slaving away over a hot keyboard – yes, I do have a life outside technology – I like spending time with my family, cooking, and attending the performing arts – theater, concerts, and movies. My family and I are ardent cat lovers and volunteer with feline rescue organizations fostering cats for future adoption.
 
 ## My Blogging History
 
@@ -31,7 +31,7 @@ My family and I are very much into cats. We have 4 of our own. We also work wi
 
 ## Free Stuff Licensing
 
-You can find most of the code from this site on [Github](https://github.com/vichargrave?tab=repositories){:target="_blank"}. All of the code is licensed according to the [Apache License, Version 2.0]("http://www.apache.org/licenses/LICENSE-2.0.html){:target="_blank"}. You are free to use it how ever you want. I've made every effort to test the code so it works according to the tests outlined in each blog. However, I take no responsibility for its suitability or use as stated in the Apache License.
+All of my code is licensed according to the [Apache License, Version 2.0]("http://www.apache.org/licenses/LICENSE-2.0.html){:target="_blank"}. You are free to use it how ever you want. I've made every effort to test the code so it works according to the tests outlined in each blog. However, I take no responsibility for its suitability or use as stated in the Apache License.
 
 ## Helping You Figure Stuff Out
 

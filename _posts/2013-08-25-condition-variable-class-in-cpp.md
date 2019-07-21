@@ -77,7 +77,7 @@ The functions discussed in the previous section are wrapped by each method of th
 
 ## CondVar Test Application
 
-You can get the source code for this project from GitHub – [https://github.com/vichargrave/condvar.git](– https://github.com/vichargrave/condvar.git){:target="_blank"}.
+You can get the source code for this project from GitHub – [https://github.com/vichargrave/condvar](https://github.com/vichargrave/condvar){:target="_blank"}.
 
 The `CondVar` class test program relies on my `Mutex` and `Thread` classes which I wrote about in previous blogs. The application declares a `CondVarTest` thread class which works with the `main()` thread to use a single condition variable and corresponding variable whose state is changed.
 
