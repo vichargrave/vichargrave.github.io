@@ -335,7 +335,7 @@ Run this script for the Elasticsearch instance you are using, then the mapping t
 
 ## Run the Data Pipeline
 
-If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi]((https://github.com/vichargrave/tweet-nifi){:target="_blank"}). 
+If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi](https://github.com/vichargrave/tweet-nifi){:target="_blank"}). 
 
 To start the tweet ingestion and indexing, click on the play button in the *Operate* box. After running the piepline for several minutes, you can run a query to check that tweets were indexed. Run a *curl* command like this:
 
