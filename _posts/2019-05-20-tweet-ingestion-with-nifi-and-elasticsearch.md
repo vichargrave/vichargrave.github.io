@@ -342,7 +342,7 @@ If you want to just get started with tweet ingestion, you can get the source cod
 3. Navigate to the directory where you unpacked the tweet-nifi tarball.
 4, Select the *tweet-nifi.xml* file.
 5. Click *Open*.
-6. Click on the *UPLOAD* buttom in the *Upload Template* pane.
+6. Click on the *UPLOAD* button in the *Upload Template* pane.
 7. Click on the *Template* button on the top of the NiFi window, then drag it to the open canvas.
 8. Select the *tweet-nifi* template from the the *Choose Template* dropdown menu.
 9. Click the *Add* button.
