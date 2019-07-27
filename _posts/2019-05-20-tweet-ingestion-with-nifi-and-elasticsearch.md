@@ -335,7 +335,19 @@ Run this script for the Elasticsearch instance you are using, then the mapping t
 
 ## Run the Data Pipeline
 
-If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi](https://github.com/vichargrave/tweet-nifi){:target="_blank"}). 
+If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi](https://github.com/vichargrave/tweet-nifi){:target="_blank"}). After unpacking the tarball, you can load the tweet-nifi facility by following these steps:
+
+1. Click on the *Upload Template* button in the *Operate* pane. 
+2. Click on the maginfying glass icon next to the text *Select Template* in the *Upload Template* pane.
+3. Navigate to the directory where you unpacked the tweet-nifi tarball.
+4, Select the *tweet-nifi.xml* file.
+5. Click *Open*.
+6. Click on the *UPLOAD* buttom in the *Upload Template* pane.
+7. Click on the *Template* button on the top of the NiFi window, then drag it to the open canvas.
+8. Select the *tweet-nifi* template from the the *Choose Template* dropdown menu.
+9. Click the *Add* button.
+
+Now double click on the *Ingest Tweets from Public Feed* process and set the Twitter Consumer and Access Token fields as described earlier in this article.  
 
 To start the tweet ingestion and indexing, click on the play button in the *Operate* box. After running the piepline for several minutes, you can run a query to check that tweets were indexed. Run a *curl* command like this:
 
