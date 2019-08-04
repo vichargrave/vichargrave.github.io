@@ -335,7 +335,7 @@ Run this script for the Elasticsearch instance you are using, then the mapping t
 
 ## Run the Data Pipeline
 
-If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi](https://github.com/vichargrave/tweet-nifi){:target="_blank"}). After unpacking the tarball, you can load the tweet-nifi facility by following these steps:
+If you want to just get started with tweet ingestion, you can get the source code on Github in the [tweet-nifi](https://github.com/vichargrave/tweet-nifi){:target="_blank"} repo. After unpacking the tarball, you can load the tweet-nifi facility by following these steps:
 
 1. Click on the *Upload Template* button in the *Operate* pane. 
 2. Click on the maginfying glass icon next to the text *Select Template* in the *Upload Template* pane.
