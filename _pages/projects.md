@@ -25,6 +25,3 @@ These are my sample code projects on Github and their corresponding blog posts. 
 | [xmldom](https://github.com/vichargrave/xmldom){:target="_blank"} | Example code for [XML Parsing With DOM in C++](/programming/xml-parsing-with-dom-in-cpp/){:target="_blank"}.
 | [xmldom-java](https://github.com/vichargrave/xmldom-java){:target="_blank"} | Example code for [XML Creation](/programming/xml-creation-with-dom-in-java/){:target="_blank"} and [Parsing with DOM](/programming/xml-parsing-with-dom-in-java/){:target="_blank"}. 
 
-## OSSEC
-
-[OSSEC](https://www.ossec.net){:target="_blank"} is an open HIDS system that was originally created by Daniel Cid. I got started with the OSSEC Project back when I was working for Trend Micro, which owned the project at the time but wanted to promote it in the open source community. To that end I organized the original series of OSSEC Conferences.  I continue to contribute the OSSEC Server virtual appliances. You can find the [OSSEC code on Github](https://github.com/ossec/ossec-hids){:target="_blank"}.
