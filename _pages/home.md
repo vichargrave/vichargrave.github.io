@@ -9,7 +9,7 @@ feature_row:
   - image_path: /assets/images/about.png
     alt: "About"
     title: About
-    excerpt: Everything your always wanted to know about me, but were afraid to ask.
+    excerpt: Everything you always wanted to know about me, but were afraid to ask.
     url: "/about/"
     btn_class: "btn--primary"
     btn_label: "read more"
