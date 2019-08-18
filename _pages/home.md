@@ -23,7 +23,7 @@ feature_row:
   - image_path: /assets/images/projects.png
     alt: "projects"
     title: Projects
-    excerpt: Click here to get a list of all my open source projects, including ones that I don't own but with which I am involved in some capacity.
+    excerpt: And here are Github projects organized into table with links to the corresponding blogs.
     url: "/projects/"
     btn_class: "btn--primary"
     btn_label: "read more"
