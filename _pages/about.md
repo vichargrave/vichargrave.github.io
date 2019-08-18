@@ -23,7 +23,7 @@ Over the years I have written a considerable amount of software project documen
 
 ## Cloud Security Alliance
 
-One of my outside projects is working with the Cloud Security Alliance Top Threats Working Group. We are a group of security analysts, devops, and software development folks who research and write publications about security threats to cloud computing infrastructures.  Our most recent publication was [The Treacherous Twelve, Cloud Computing Top Threats in 2016](https://downloads.cloudsecurityalliance.org/assets/research/top-threats/Treacherous-12_Cloud-Computing_Top-Threats.pdf){:target="_blank"}.  I wrote the sections on **system vulnerabilities** and **advanced persistent threats**.
+One of my outside projects is working with the Cloud Security Alliance Top Threats Working Group. We are a group of security analysts, devops, and software development folks who research and write publications about security threats to cloud computing infrastructures.  Our most recent publication is [Top Threats to Cloud Computing - The Egregious 11](https://cloudsecurityalliance.org/artifacts/top-threats-to-cloud-computing-egregious-eleven){:target="_blank"}.  I wrote the section on **insider threats**.
 
 ## Feral Cat Rehabilitation
 
