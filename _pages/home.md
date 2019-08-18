@@ -23,7 +23,7 @@ feature_row:
   - image_path: /assets/images/projects.png
     alt: "projects"
     title: Projects
-    excerpt: My Github projects organized into table with links to the corresponding blogs.
+    excerpt: My Github projects organized into a table with links to the corresponding blogs.
     url: "/projects/"
     btn_class: "btn--primary"
     btn_label: "read more"
