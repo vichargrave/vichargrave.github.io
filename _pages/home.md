@@ -16,14 +16,14 @@ feature_row:
   - image_path: /assets/images/posts.png
     alt: "Posts"
     title: Posts
-    excerpt: My blog atchive organixed by year.<br>
+    excerpt: Click here to go to my blog archive organized by year.<br>
     url: "/year-archive/"
     btn_class: "btn--primary"
     btn_label: "read more"
   - image_path: /assets/images/projects.png
     alt: "projects"
     title: Projects
-    excerpt: Summay of my Github projects and corresponding blogs.
+    excerpt: Summary of my Github projects and corresponding blogs.
     url: "/projects/"
     btn_class: "btn--primary"
     btn_label: "read more"
