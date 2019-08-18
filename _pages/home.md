@@ -16,7 +16,7 @@ feature_row:
   - image_path: /assets/images/posts.png
     alt: "Posts"
     title: Posts
-    excerpt: I have written blogs for all my Gihub sample code repos. Here you will find my blog archive organized by year.<br>
+    excerpt: Here you will find my blog archive organized by year in descending order.<br>
     url: "/year-archive/"
     btn_class: "btn--primary"
     btn_label: "read more"
