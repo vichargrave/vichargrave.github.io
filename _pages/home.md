@@ -9,7 +9,7 @@ feature_row:
   - image_path: /assets/images/about.png
     alt: "About"
     title: About
-    excerpt: Everything your always wanted to know about Vic, but were afraid to ask. What do I do? Why do I blog? What's the best number?
+    excerpt: Everything your always wanted to know about Vic, but were afraid to ask.
     url: "/about/"
     btn_class: "btn--primary"
     btn_label: "read more"
@@ -23,7 +23,7 @@ feature_row:
   - image_path: /assets/images/projects.png
     alt: "projects"
     title: Projects
-    excerpt: And here are my Github projects organized into table with links to the corresponding blogs.
+    excerpt: My Github projects organized into table with links to the corresponding blogs.
     url: "/projects/"
     btn_class: "btn--primary"
     btn_label: "read more"
