@@ -53,7 +53,6 @@ Another special thanks to the folks of the **[pandapower development team at the
 
 Finally, thanks to **[Dryicons](https://dryicons.com/icon-packs/handy-icons-set){:target="_blank"}** for my home page icons. 
 
-<br>
 >*Our whole universe was in a hot dense state,<br>
 >Then nearly fourteen billion years ago expansion started. Wait...<br>
 >The Earth began to cool,<br>
