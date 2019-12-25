@@ -159,4 +159,4 @@ Your first document will look something like this:
 
 ## Next Steps
 
-In this blog you were introduced to the process of creating a basic Sphinx project how to generate your first document.  Part 2 of this series will delve more deeply into creating a table contents and adding pages to your document to express nicely formatted REST APIs.
+In this blog you were introduced to the process of creating a basic Sphinx project and how to generate your first document.  Part 2 of this series will delve more deeply into creating a table contents and adding pages to your document to express nicely formatted REST APIs.
