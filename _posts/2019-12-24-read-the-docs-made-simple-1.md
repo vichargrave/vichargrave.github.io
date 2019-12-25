@@ -27,7 +27,7 @@ This blog is part 1 of a 3 part series which illustrate how to create a simple *
 
 The key to harnessing **Read The Docs** is getting your head wrapped around the [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) format.  RST is a form of text markdown that provides directives to help you organize and format your document using a simple text editor.  To create a document with a set of RST files, you use the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler. 
 
-Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document during the course this series of articles. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
+Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
 
 {% highlight bash linenos%}
 % mkdir starterdoc
