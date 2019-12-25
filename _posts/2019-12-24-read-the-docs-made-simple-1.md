@@ -21,6 +21,8 @@ While developing software, documentation is frequently the furthest thing from a
 
 I've written a lot of documentation in my day, and continue to do so, mostly with tools like emacs, Word, PowerPoint, and Confluence.  My favorite though is [Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"}.  With it you can create visually attractive and well organized documents with (relatively) simple textual directives that can produce HTML and PDF copy for online presentation. 
 
+This blog is part 1 of a 3 part series which illustrate how to create a simple **Read The Docs** online document ib HTML and PDF formats. In part 1, I'll cover making a basic document from scratch that will form the basis for the project you'll flesh out in parts 2 and 3. 
+
 ## Install Sphinx
 
 The key to harnessing **Read The Docs** is getting your head wrapped around the [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) format.  RST is a form of text markdown that provides directives to help you organize and format your document using a simple text editor.  To create a document with a set of RST files, you use the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler. 
@@ -157,23 +159,4 @@ Your first document will look something like this:
 
 ## Next Steps
 
-
-
-## Install and Configure HTML Builder
-
-
-
-
-## Create a Table of Contents
-
-
-## Add Content Pages
-
-
-## Build the HTML Document
-
-
-## Install and Configure Latex Builder
-
-
-## Build the PDF Document
+In this blog you were introduced to the process of creating a basic Sphinx project how to generate your first document.  Part 2 of this series will delve more deeply into creating a table contents and adding pages to your document to express nicely formatted REST APIs.
