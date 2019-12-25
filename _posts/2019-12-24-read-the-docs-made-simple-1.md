@@ -19,7 +19,7 @@ tags:
 
 While developing software, documentation is frequently the furthest thing from a programmer's mind. Writing documentation can be tedious and, well let's just say it, downright boring.  But these days, open platforms supporting public APIs are proliferating and their success depends heavily on how easy it is to use these APIs.  There's no getting around it, if you have created an API for your service that you want your customers to adopt, you have to have good documentation for it.
 
-I've written a lot of documentation in my day, and continue to do so, mostly with tools like emacs, Word, PowerPoint, and Confluence.  My favorite though is [Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"}.  With it you can create visually attractive and well organized documents with (relatively) simple textual directives that can produce HTML and PDF copy for online presentation. 
+I've written a lot of documentation in my day, and continue to do so, using various tools like emacs, Word, PowerPoint, Confluence, etc.  My favorite though is [Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"}.  With it you can create visually attractive and well organized documents with (relatively) simple textual directives that can produce HTML and PDF copy for online presentation. 
 
 This blog is part 1 of a 3 part series which illustrate how to create a simple **Read The Docs** online document ib HTML and PDF formats. In part 1, I'll cover making a basic document from scratch that will form the basis for the project you'll flesh out in parts 2 and 3. 
 
@@ -27,7 +27,7 @@ This blog is part 1 of a 3 part series which illustrate how to create a simple *
 
 The key to harnessing **Read The Docs** is getting your head wrapped around the [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) format.  RST is a form of text markdown that provides directives to help you organize and format your document using a simple text editor.  To create a document with a set of RST files, you use the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler. 
 
-Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document during the course this article. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
+Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document during the course this series of articles. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
 
 {% highlight bash linenos%}
 % mkdir starterdoc
