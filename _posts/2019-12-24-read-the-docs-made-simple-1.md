@@ -238,7 +238,7 @@ Run the `make clean html` and `open build/html/index.html` commands to rebuild a
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
 
-Now you have two links in your table of contents that will open their respective pages when clicked upon.  
+Now you have two links in your table of contents that will open their respective pages when clicked upon.  The scaffolding has been created to build out the document in Parts 2 and 3 of this series.
 
 ## Next Steps
 
