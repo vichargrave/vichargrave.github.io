@@ -147,7 +147,7 @@ The directory structure of you project will then look like this:
     └── index.rst
 {% endhighlight %}
 
-The `build` folder contains the target files in the `html` directory. All the scaffolding for the HTML document are added automatically.  The `html/index.html` is the root page and is build from `source/index.rst`. To view the document just open it in a browser:
+The `build` folder contains the target files in the `html` directory. All the scaffolding for the HTML document are added automatically.  The `html/index.html` is the root page and is built from `source/index.rst`. To view the document just open it in a browser:
 
 {% highlight bash %}
 (starterdoc) % open build/html/index.html
@@ -237,6 +237,8 @@ Forms API
 Run the `make clean html` and `open build/html/index.html` commands to rebuild and view your document.  It should look like this:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
+
+Now you have two links in your table of contents that will open their respective pages when clicked upon.  
 
 ## Next Steps
 
