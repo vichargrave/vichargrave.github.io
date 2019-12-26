@@ -29,7 +29,7 @@ The key to harnessing **Read The Docs** is getting your head wrapped around the 
 
 Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
 
-{% highlight bash linenos%}
+{% highlight bash linenos %}
 % mkdir starterdoc
 % cd starterdoc
 % pip install pipenv
@@ -42,7 +42,7 @@ Let's get started with Sphinx by creating a starter project that will be built o
 
 Next create the starter project base documents, run the `sphinx-builder` command, answering the questions that follow it.  You can use your own name when prompted for the document author in line 16.
 
-{% highlight bash linenos%}
+{% highlight bash linenos %}
 (starterdoc) % sphinx-builder restdoc
 Welcome to the Sphinx 2.3.1 quickstart utility.
 
@@ -147,9 +147,9 @@ The directory structure of you project will then look like this:
     └── index.rst
 {% endhighlight %}
 
-As you can see, the `build` folder contains the target files in the `html` directory. All the scaffolding for the HTML document are added automatically, including a search capability that enables your readers to search your documentation. The `html/index.html` is the root page and is build from `source/index.rst`. To view the document just open it in a browser:
+The `build` folder contains the target files in the `html` directory. All the scaffolding for the HTML document are added automatically.  The `html/index.html` is the root page and is build from `source/index.rst`. To view the document just open it in a browser:
 
-{% highlight bash%}
+{% highlight bash %}
 (starterdoc) % open build/html/index.html
 {% endhighlight %}
 
@@ -157,6 +157,87 @@ Your first document will look something like this:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document.png){:width="100%" .align-center}
 
+Sphinx does more than just convert the RST files to HTML. In addition to nicely formatted HTML, you also get a search tool right of the box that lets you search for terms in your document without having to add code to do this.
+
+## Add a Table of Contents
+
+Now you have a basic document that you can edit to your liking.  Typically the table of contents contained in the `restdoc/source/index.rst` file looks like the following: 
+
+{% highlight markdown linenos %}
+.. Rest API documentation master file, created by
+   sphinx-quickstart on Wed Dec 25 11:21:59 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Rest API's documentation!
+====================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+{% endhighlight %}
+
+Section headings are denoted by a series of `=` characters under the heading text. This is true for any Sphinx page. The table of contents is designated with the `.. toctree::` line.  There are 3 sections in this file: 
+
+- Comments at the top
+- Table of contents in the middle
+- Index section at the bottom. 
+
+You don't need the top and bottom sections for this project so just remove them.  Also remove the `:caption: Contents:` line, and change the title to __REST API Document__.  The `index.rst` file should now look like this:
+
+{% highlight markdown linenos %}
+Rest API Document
+=================
+
+.. toctree::
+   :maxdepth: 2
+   
+{% endhighlight %}
+
+For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the `.rst` extension.  The document you are going to create consists of two pages called `retrieve` and `forms`, so add these items to the table of contents in `index.rst`. 
+
+{% highlight markdown linenos %}
+Rest API Document
+=================
+
+.. toctree::
+   :maxdepth: 2
+
+   retrieve
+   forms
+{% endhighlight %}
+
+When the document is built again, Sphinx automatically sets up links to `retrieve.rst` and `forms.rst` files in the `source` directory.
+
+## Add Pages to the Document
+
+To keep things simple at this stage, you can just add headings to the `retrieve.rst` and `forms.rst` files, again underlining the heads with `=` characters. You'll add more content later in Part 2.  The contents `retrieve.rst` and `forms.rst` files, respectively, should looks like this: 
+
+{% highlight markdown %}
+Retrieve API
+============
+
+{% endhighlight %}
+
+{% highlight  markdown %}
+Forms API
+=========
+
+{% endhighlight %}
+
+Run the `make clean html` and `open build/html/index.html` commands to rebuild and view your document.  It should look like this:
+
+![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
+
 ## Next Steps
 
-In this blog you were introduced to the process of creating a basic Sphinx project and how to generate your first document.  Part 2 of this series will delve more deeply into creating a table contents and adding pages to your document to express nicely formatted REST APIs.
+In this blog you were introduced to the process of creating a basic Sphinx project and how to generate your first document. You were able to easily create a table of contents and add pages, that were automatically indexed for you by Sphinx. Part 2 of this series will delve more deeply into the Sphinx facitlties and syntax you can use to describe REST APIs in detail. 
