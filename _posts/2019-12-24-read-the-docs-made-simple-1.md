@@ -82,7 +82,7 @@ source files. Use the Makefile to build the docs, like so:
 where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
 {% endhighlight %}
 
-The directory structure of the `starterproject` will look like this:
+The directory structure of the *starterproject* will look like this:
 
 {% highlight bash%}
 .
@@ -99,14 +99,14 @@ The directory structure of the `starterproject` will look like this:
         └── index.rst
 {% endhighlight %}
 
-File you edit to create your document are contained in the `source` directory. To build your first document:
+The files you edit to create your document are contained in the *restdoc/source* directory. To build your first document, run these commands:
 
 {% highlight bash%}
 (starterdoc) % cd restdoc
 (starterdoc) % make clean html
 {% endhighlight %}
 
-The directory structure of you project will then look like this:
+The structure of teh *restdoc* directory looks like this:
 
 {% highlight bash%}
 .
@@ -147,7 +147,7 @@ The directory structure of you project will then look like this:
     └── index.rst
 {% endhighlight %}
 
-The `build` folder contains the target files in the `html` directory. All the scaffolding for the HTML document are added automatically.  The `html/index.html` is the root page and is built from `source/index.rst`. To view the document just open it in a browser:
+TAll the scaffolding for the HTML document are added automatically to the *build/html* directory.  The *html/index.html* is the root page and is built from *source/index.rst*. To view the HTML document just open it in a browser:
 
 {% highlight bash %}
 (starterdoc) % open build/html/index.html
@@ -161,7 +161,7 @@ Sphinx does more than just convert the RST files to HTML. In addition to nicely 
 
 ## Add a Table of Contents
 
-Now you have a basic document that you can edit to your liking.  Typically the table of contents contained in the `restdoc/source/index.rst` file looks like the following: 
+Now you have a basic document that you can edit to your liking.  The RST for the table of contents is contained in the *source/index.rst*:
 
 {% highlight markdown linenos %}
 .. Rest API documentation master file, created by
@@ -192,7 +192,7 @@ Section headings are denoted by a series of `=` characters under the heading tex
 - Table of contents in the middle, lines 6 - 14
 - Index section at the bottom, lines 15 - 20
 
-You don't need the top and bottom sections for this project so just remove them.  Also remove the `:caption: Contents:` line, and change the title to __REST API Document__.  The `index.rst` file should now look like this:
+You don't need the top and bottom sections for this project so just remove them.  Also remove the `:caption: Contents:` line, and change the title to __REST API Document__.  At this point, the *index.rst* file should look like this:
 
 {% highlight markdown %}
 Rest API Document
@@ -203,7 +203,7 @@ Rest API Document
    
 {% endhighlight %}
 
-For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the `.rst` extension.  The document you are going to create consists of two pages called `retrieve` and `forms`, so add these items to the table of contents in `index.rst`. 
+For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the *.rst* extension.  The document you are going to create consists of two pages called `retrieve` and `forms`, so add these items to the table of contents in *index.rst*. 
 
 {% highlight markdown %}
 Rest API Document
@@ -216,11 +216,11 @@ Rest API Document
    forms
 {% endhighlight %}
 
-When the document is built again, Sphinx automatically sets up links to `retrieve.rst` and `forms.rst` files in the `source` directory.
+When the document is built again, Sphinx automatically sets up links to *retrieve.rst* and *forms.rst* files in the *restdoc/source* directory.
 
 ## Add Pages to the Document
 
-To keep things simple at this stage, you can just add headings to the `retrieve.rst` and `forms.rst` files, again underlining the heads with `=` characters. You'll add more content later in Part 2.  The contents `retrieve.rst` and `forms.rst` files, respectively, should looks like this: 
+To keep things simple at this stage, you can just add headings to the *retrieve.rst* and *forms.rst* files, again underlining the heads with `=` characters. You'll add more content later in Part 2.  The contents *retrieve.rst* and *forms.rst* files, respectively, should looks like this: 
 
 {% highlight markdown %}
 Retrieve API
@@ -234,11 +234,11 @@ Forms API
 
 {% endhighlight %}
 
-Run the `make clean html` and `open build/html/index.html` commands in the `restdoc` directory to rebuild and view your document.  It should look like this:
+After building the document again, open it in your browser:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
 
-Now you have two links in your table of contents that will open their respective pages when clicked upon.  The scaffolding has been created to build out the document in Parts 2 and 3 of this series.
+Now you have two links in your table of contents that will open their respective pages when clicked upon.
 
 ## Next Steps
 
