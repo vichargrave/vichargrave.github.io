@@ -234,7 +234,7 @@ Forms API
 
 {% endhighlight %}
 
-Run the `make clean html` and `open build/html/index.html` commands to rebuild and view your document.  It should look like this:
+Run the `make clean html` and `open build/html/index.html` commands in the `restdoc` directory to rebuild and view your document.  It should look like this:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
 
