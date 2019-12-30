@@ -106,7 +106,7 @@ The files you edit to create your document are contained in the *restdoc/source*
 (starterdoc) % make clean html
 {% endhighlight %}
 
-The structure of teh *restdoc* directory looks like this:
+The structure of the *restdoc* directory is populated with all the necessary base files to create an empty online document:
 
 {% highlight bash%}
 .
@@ -147,13 +147,13 @@ The structure of teh *restdoc* directory looks like this:
     └── index.rst
 {% endhighlight %}
 
-TAll the scaffolding for the HTML document are added automatically to the *build/html* directory.  The *html/index.html* is the root page and is built from *source/index.rst*. To view the HTML document just open it in a browser:
+The base document HTML is contained in *build/html*. The *html/index.html* is the root page, which is built from *source/index.rst*. To view the HTML document just open it in a browser:
 
 {% highlight bash %}
 (starterdoc) % open build/html/index.html
 {% endhighlight %}
 
-Your first document will look something like this:
+Your first document should look like the following:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document.png){:width="100%" .align-center}
 
