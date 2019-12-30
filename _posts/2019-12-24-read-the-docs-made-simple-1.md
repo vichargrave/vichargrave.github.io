@@ -157,7 +157,7 @@ Your first document should look like the following:
 
 ![First Sphinx Document](/assets/images/First_Sphinx_Document.png){:width="100%" .align-center}
 
-Sphinx does more than just convert the RST files to HTML. In addition to nicely formatted HTML, you also get a search tool right of the box that lets you search for terms in your document without having to add code to do this.
+Sphinx does more than just convert the RST files to HTML. In addition to nicely formatted HTML, you also get a search tool right of the box that lets you search for terms in your document without having to add code.
 
 ## Add a Table of Contents
 
@@ -203,7 +203,7 @@ Rest API Document
    
 {% endhighlight %}
 
-For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the *.rst* extension.  The document you are going to create consists of two pages called `retrieve` and `forms`, so add these items to the table of contents in *index.rst*. 
+For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the *.rst* extension.  The document you are going to create consists of two pages called `retrieve` and `forms`. Add these items to the table of contents in *index.rst*. 
 
 {% highlight markdown %}
 Rest API Document
@@ -216,11 +216,11 @@ Rest API Document
    forms
 {% endhighlight %}
 
-When the document is built again, Sphinx automatically sets up links to *retrieve.rst* and *forms.rst* files in the *restdoc/source* directory.
+When the document is built again, Sphinx automatically sets up links to *retrieve.rst* and *forms.rst* files.
 
 ## Add Pages to the Document
 
-To keep things simple at this stage, you can just add headings to the *retrieve.rst* and *forms.rst* files, again underlining the heads with `=` characters. You'll add more content later in Part 2.  The contents *retrieve.rst* and *forms.rst* files, respectively, should looks like this: 
+To keep things simple at this stage, you can just add headings to the *retrieve.rst* and *forms.rst* files, again underlining the heads with `=` characters. You'll add more content later in Part 2 of this series.  The contents *retrieve.rst* and *forms.rst* files, respectively, should looks like this: 
 
 {% highlight markdown %}
 Retrieve API
