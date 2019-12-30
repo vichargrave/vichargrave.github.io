@@ -339,9 +339,9 @@ def main(node, nic, file, dir, bpf, chunk, count, list):
         sys.exit(1)
 {% endhighlight %}
 
-**[Lines 3-8]** Create the *Tshark* object and set teh interrupt handlers. If the `node` argument is set to an Elasticsearch IP and port, create an Elasticsearch client object.
+**[Lines 3-8]** Create the *Tshark* object and set the interrupt handlers. If the `node` argument is set to an Elasticsearch IP and port, create an Elasticsearch client object.
 
-**[Lines 10-13]** If the list of network interfaces has been requested, create teh *tshark* command specifying all the arguments to *make_command()* tp be `None` except the *interfaces* argument which is set to `True`.  Call *list_interfaces()* with the command then exit the appliction when done.
+**[Lines 10-13]** If the list of network interfaces has been requested, create the *tshark* command specifying all the arguments to *make_command()* tp be `None` except the *interfaces* argument which is set to `True`.  Call *list_interfaces()* with the command then exit the appliction when done.
 
 **[Lines 15-21]** Check to the input arguments to make sure either a network interface, file capture, or a directory of files has been specified. If all of thee arguments are `None`, then print an error indicating that one of them must be set then exit the application.  
 
