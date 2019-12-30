@@ -29,7 +29,7 @@ The key to harnessing **Read The Docs** is getting your head wrapped around the 
 
 Let's get started with Sphinx by creating a starter project that will be built out into a full-fledged REST API document. Sphinx is Python based tool, so you will have to have Python running on your system. Create the project directory then install Sphinx in a Python virtual environment:
 
-{% highlight bash linenos %}
+{% highlight bash %}
 % mkdir starterdoc
 % cd starterdoc
 % pip install pipenv
@@ -188,13 +188,13 @@ Indices and tables
 
 Section headings are denoted by a series of `=` characters under the heading text. This is true for any Sphinx page. The table of contents is designated with the `.. toctree::` line.  There are 3 sections in this file: 
 
-- Comments at the top
-- Table of contents in the middle
-- Index section at the bottom. 
+- Comments at the top, lines 1 - 5 
+- Table of contents in the middle, lines 6 - 14
+- Index section at the bottom, lines 15 - 20
 
 You don't need the top and bottom sections for this project so just remove them.  Also remove the `:caption: Contents:` line, and change the title to __REST API Document__.  The `index.rst` file should now look like this:
 
-{% highlight markdown linenos %}
+{% highlight markdown %}
 Rest API Document
 =================
 
@@ -205,7 +205,7 @@ Rest API Document
 
 For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the `.rst` extension.  The document you are going to create consists of two pages called `retrieve` and `forms`, so add these items to the table of contents in `index.rst`. 
 
-{% highlight markdown linenos %}
+{% highlight markdown %}
 Rest API Document
 =================
 
