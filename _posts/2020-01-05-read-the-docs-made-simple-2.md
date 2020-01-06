@@ -17,9 +17,9 @@ tags:
   - Documentation
 ---
 
-[Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"} has become the defacto standard for technical documentation, particularly in the Python world. You write your docunment content in [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) markdown ith a simple text editor then build online ready documentation with the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler.
+[Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"} has become the defacto standard for technical documentation, particularly in the Python world. You write your document content in [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) markdown with a simple text editor then build online ready documentation with the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler.
 
-This article is Part 2 of a 3 parts series where I show you how to use **Read The Docs** to create documentation for a REST API.  [Part 1](){:target="_blank"} covered how to make a basic Sphinx document project. In Part 2, you will add content to document for ficticious API using some of the more sophisticated Sphinx directives.
+This article is Part 2 of a 3 parts series where I show you how to use **Read The Docs** to create documentation for a REST API.  [Part 1](https://vichargrave.github.io/programming/read-the-docs-made-simple-1/){:target="_blank"} covered how to make a basic Sphinx document project. In Part 2, you will add content to your document for ficticious API using some of the more sophisticated Sphinx directives.
 
 ## Change the Document Theme
 
@@ -160,7 +160,7 @@ The `sphinxcontrib-httpdomain` module installed earlier, adds markdown to Sphinx
 - `:form {data type}:` - Parameter in the body of an HTTP request. 
 - `:requestheader {header MIME type}:` - Request headers that must be included by the user of the API.  For example: `Content-Type: application/json`
 
-There can be 1 or more of any of the last 3 parameters.
+You will see what the pages look like that use this markdown when you add content to your document later.
 
 ### Source Code
 
@@ -178,7 +178,7 @@ One way to show how APIs workd is to use **curl** command examples. In this case
 
 The APIs that you will document are based on a ficticious library database that provides a web service supporting two APIs. The first API retrieves books by author name. Copy and paste the RST content below to your *retrieve.rst* file. The example response consists of a list of books in JSON format.
 
-{% highlight markdown linenos %}
+{% highlight markdown %}
 Retrieve Book Titles by Author
 ------------------------------
 
@@ -205,7 +205,7 @@ Retrieve Book Titles by Author
 .. sourcecode:: json
 
    {
-      "count": 18,
+      "count": 17,
       "results": [
          {
              "author": "Crichton, Michael",
@@ -243,7 +243,7 @@ Notice how the API markdown has automatically highlighted and formatted the GET 
 
 The second API example adds a book to the library database. This API uses an HTTP POST request to send the book information, expressed in JSON format, to the web service. Again, copy the markdown text in this block and paste it into the `forms.rst` file.
 
-{% highlight markdown linenos %}
+{% highlight markdown %}
 Add Books to the Database
 -------------------------
 
@@ -257,7 +257,7 @@ Add Books to the Database
    :form string: publisher (*optional*) -- Publisher of the book 
    :form string: latest_publication_date (*optional*) -- Most recent publication date
    :form string: language (*optional*) -- Language used in the writing of the book 
-   :form string: isbn10 (**required*) -- ISBN 10 number of the book
+   :form string: isbn10 (*required*) -- ISBN 10 number of the book
    :form string: isbn13 (*optional*) -- ISBN 13 number of the book
    
    :requestheader Authorization: `token`
@@ -279,10 +279,10 @@ Add Books to the Database
 
 After rebuilding the document, the *Forms API* page will look like this:
 
-![](/assets/images/sphinx_retrieve_api_example.png){:width="100%" .align-center}
+![](/assets/images/sphinx_forms_api_example.png){:width="100%" .align-center}
 
 ## Next Steps
 
 You now have a complete **Read The Docs** document describing an HTTP REST API. All you have to do to put the document online is to copy the contents of the *build* directory to a web servert directory so it can open the `build/html/index.html` file.  You can use your `starterdoc` project as  base template for other documents you may want to write.
 
-But there is more Sphinx can do.  With just a few addtional tools, you can build a PDF version of your document with just some additional configuration. In part 3 of this series you will explore how to use Sphinx to generate PDF copy of yoru document.
+But there is more Sphinx can do.  With just a few addtional tools, you can build a PDF version of your document with just some additional configuration. In part 3 of this series you will explore how to use Sphinx to generate PDF copy of your document.
