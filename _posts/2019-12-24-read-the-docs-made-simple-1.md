@@ -155,7 +155,7 @@ The base document HTML is contained in *build/html*. The *html/index.html* is th
 
 Your first document should look like the following:
 
-![First Sphinx Document](/assets/images/First_Sphinx_Document.png){:width="100%" .align-center}
+![](/assets/images/First_Sphinx_Document.png){:width="100%" .align-center}
 
 Sphinx does more than just convert the RST files to HTML. In addition to nicely formatted HTML, you also get a search tool right of the box that lets you search for terms in your document without having to add code.
 
@@ -236,7 +236,7 @@ Forms API
 
 After building the document again, open it in your browser:
 
-![First Sphinx Document](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
+![](/assets/images/First_Sphinx_Document_2.png){:width="100%" .align-center}
 
 Now you have two links in your table of contents that will open their respective pages when clicked upon.
 
