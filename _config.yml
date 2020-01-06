@@ -15,7 +15,7 @@ title                    : "vichargrave.github.io"
 title_separator          : "-"
 name                     : &name "Vic Hargrave" # &name is a YAML anchor which can be *referenced later
 description              : &description "Coder on the loose, enjoying life one cup of coffee at a time."
-url                      : https://vichargrave.github.io 
+url                      : https://vichargrave.github.io
 baseurl                  : 
 repository               : "vichargrave/vichargrave.github.io"
 teaser                   : 
@@ -185,7 +185,6 @@ defaults:
 sass:
   sass_dir: _sass
   style: compressed # http://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
-
 
 # Outputting
 permalink: /:categories/:title/
