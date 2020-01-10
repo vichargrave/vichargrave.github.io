@@ -19,7 +19,7 @@ tags:
 
 [Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"} has become the defacto standard for technical documentation, particularly in the Python world. You write your document content in [reStructured Text](https://docutils.sourceforge.io/rst.html){:target="_blank"} (RST) markdown with a simple text editor then build online ready documentation with the [Sphinx](https://www.sphinx-doc.org/en/1.5/tutorial.html){:target="_blank"} compiler.
 
-This article is Part 2 of a 3 parts series where I show you how to use **Read The Docs** to create documentation for a REST API.  [Part 1](https://vichargrave.github.io/programming/read-the-docs-made-simple-1/){:target="_blank"} covered how to make a basic Sphinx document project. In Part 2, you will add content to your document for a ficticious API using some of the more sophisticated Sphinx directives.
+This article is Part 2 of a 3 parts series which shows you how to use **Read The Docs** to create documentation for a REST API.  [Part 1](https://vichargrave.github.io/programming/read-the-docs-made-simple-1/){:target="_blank"} covered how to make a basic Sphinx document project. In Part 2, you will add content to your document for a ficticious API using some of the more sophisticated Sphinx directives.
 
 ## Change the Document Theme
 
