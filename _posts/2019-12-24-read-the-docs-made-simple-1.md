@@ -21,7 +21,7 @@ While developing software, documentation is frequently the furthest thing from a
 
 I've written a lot of documentation in my day, and continue to do so, using various tools like emacs, Word, PowerPoint, Confluence, etc.  My favorite though is [Read The Docs](https://docs.readthedocs.io/en/stable/){:target="_blank"}.  With it you can create visually attractive and well organized documents with (relatively) simple textual directives that can produce HTML and PDF copy for online presentation. 
 
-This blog is part 1 of a 3 part series which illustrate how to create a simple **Read The Docs** online document ib HTML and PDF formats. In part 1, I'll cover making a basic document from scratch that will form the basis for the project you'll flesh out in parts 2 and 3. 
+This blog is part 1 of a 2 part series which illustrate how to create a simple **Read The Docs** online document ib HTML and PDF formats. In part 1, I'll cover making a basic document from scratch that will form the basis for the project you'll flesh out in parts 2. 
 
 ## Install Sphinx
 
@@ -84,7 +84,7 @@ where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
 
 The directory structure of the *starterproject* will look like this:
 
-{% highlight bash%}
+{% highlight bash %}
 .
 ├── Pipfile
 ├── Pipfile.lock
@@ -101,14 +101,14 @@ The directory structure of the *starterproject* will look like this:
 
 The files you edit to create your document are contained in the *restdoc/source* directory. To build your first document, run these commands:
 
-{% highlight bash%}
+{% highlight bash %}
 (starterdoc) % cd restdoc
 (starterdoc) % make clean html
 {% endhighlight %}
 
 The structure of the *restdoc* directory is populated with all the necessary base files to create an empty online document:
 
-{% highlight bash%}
+{% highlight bash %}
 .
 ├── Makefile
 ├── build
@@ -194,7 +194,7 @@ Section headings are denoted by a series of `=` characters under the heading tex
 
 You don't need the top and bottom sections for this project so just remove them.  Also remove the `:caption: Contents:` line, and change the title to __REST API Document__.  At this point, the *index.rst* file should look like this:
 
-{% highlight markdown %}
+{% highlight python %}
 Rest API Document
 =================
 
@@ -205,7 +205,7 @@ Rest API Document
 
 For each page that you want add to your document, you add a corresponding item under the `:maxdepth: 2` line.  The name of a table of contents item must be the same as the name of the RST file containing the page content __minus__ the *.rst* extension.  The document you are going to create consists of two pages called `retrieve` and `forms`. Add these items to the table of contents in *index.rst*. 
 
-{% highlight markdown %}
+{% highlight python %}
 Rest API Document
 =================
 
@@ -222,13 +222,13 @@ When the document is built again, Sphinx automatically sets up links to *retriev
 
 To keep things simple at this stage, you can just add headings to the *retrieve.rst* and *forms.rst* files, again underlining the heads with `=` characters. You'll add more content later in Part 2 of this series.  The contents *retrieve.rst* and *forms.rst* files, respectively, should looks like this: 
 
-{% highlight markdown %}
+{% highlight python %}
 Retrieve API
 ============
 
 {% endhighlight %}
 
-{% highlight  markdown %}
+{% highlight python %}
 Forms API
 =========
 
