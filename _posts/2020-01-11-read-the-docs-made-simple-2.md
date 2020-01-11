@@ -327,7 +327,7 @@ To build the PDF version of your document run `make` with the `latexdf` command.
 % open build/latexpdf/apiref.pdf
 {% endhighlight %}
 
-The cover of the PDF document will looks this:
+Here is the cover of the PDF document::
 
 ![](/assets/images/Rest_API_Ref_Cover.png){:width="100%" .align-center}
 
