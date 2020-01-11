@@ -100,7 +100,7 @@ When you build your document, Sphinx will automatically add the page title and s
 On certain occassions you may want to draw attention to certain points in a document.  Sphinx supports markdown to create the following types of notations. 
 
 - note - basic note or reminder 
-{% highlight markdown %}
+{% highlight python %}
 .. note::
    Many English words aren't spelled the way they sound.
 {% endhighlight %}
@@ -108,7 +108,7 @@ On certain occassions you may want to draw attention to certain points in a docu
 ![](/assets/images/sphinx_note.png){:width="90%" .align-center}
 
 - important - a note that underlines a particularly important point
-{% highlight markdown %}
+{% highlight python %}
 .. important::
    Dictionaries can help you spell words, but you need to know the first one or two characters of the word you want to look up.
 {% endhighlight %}
@@ -116,7 +116,7 @@ On certain occassions you may want to draw attention to certain points in a docu
 ![](/assets/images/sphinx_important.png){:width="90%" .align-center}
 
 - warning - note that indicates what happens if a certain point is not followed
-{% highlight markdown %}
+{% highlight python %}
 .. warning::
    Failing to dot your **i**s and cross your **t**s, makes the words you write difficult to read.
 {% endhighlight %}
@@ -124,7 +124,7 @@ On certain occassions you may want to draw attention to certain points in a docu
 ![](/assets/images/sphinx_warning.png){:width="90%" .align-center}
 
 - tip - note that advises the reader regarding a best practice
-{% highlight markdown %}
+{% highlight python %}
 .. tip::
    When spelling a word, **i** usually comes before **e** except after **c**.   
 {% endhighlight %}
@@ -139,7 +139,7 @@ You'll notice that the text following the notation markown is indentend 4 spaces
 
 The `sphinxcontrib-httpdomain` module installed earlier, adds markdown to Sphinx that enables you to clearly present HTTP requests. The API markdown format is:
 
-{% highlight markdown %}
+{% highlight python %}
 .. http:{request method}:: {API URL Path}
    :noindex:
    
@@ -166,7 +166,7 @@ You will see what the pages look like that use this markdown when you add conten
 
 Source code markdown applies syntax coloring for code examples in your API documentation. The code can be either programming code or blocks of text fields of a particulary format, like JSON. 
 
-{% highlight markdown %}
+{% highlight python %}
 .. sourcecode:: {code type}
    
    {body of code}
@@ -178,7 +178,7 @@ One way to show how APIs workd is to use **curl** command examples. In this case
 
 The APIs that you will document are based on a ficticious library database that provides a web service supporting two APIs. The first API retrieves books by author name. Copy and paste the RST content below to your *retrieve.rst* file. The example response consists of a list of books in JSON format.
 
-{% highlight markdown %}
+{% highlight python linenos %}
 Retrieve Book Titles by Author
 ------------------------------
 
@@ -233,6 +233,8 @@ Retrieve Book Titles by Author
 
 {% endhighlight %}
 
+Notice that the API description in line 7 is indented 2 more spaces than the other markdown. As it turns, out this is necessary to make sure the description is indented so it aligns with other API text when the document is rendered in PDF format. Building PDF documents will b discussed later in this article.
+
 When you build the document and open the HTML in the browser, the *Retrieve API* page will look like this:
 
 ![](/assets/images/sphinx_retrieve_api_example.png){:width="100%" .align-center}
@@ -243,7 +245,7 @@ Notice how the API markdown has automatically highlighted and formatted the GET 
 
 The second API example adds a book to the library database. This API uses an HTTP POST request to send the book information, expressed in JSON format, to the web service. Again, copy the markdown text in this block and paste it into the `forms.rst` file.
 
-{% highlight markdown %}
+{% highlight python linenos %}
 Add Books to the Database
 -------------------------
 
@@ -281,8 +283,63 @@ After rebuilding the document, the *Forms API* page will look like this:
 
 ![](/assets/images/sphinx_forms_api_example.png){:width="100%" .align-center}
 
-## Next Steps
+## Generate PDF Documentation
 
-You now have a complete **Read The Docs** document describing an HTTP REST API. All you have to do to put the document online is to copy the contents of the *build* directory to a web servert directory so it can open the `build/html/index.html` file.  You can use your `starterdoc` project as  base template for other documents you may want to write.
+With the help of some additional tools, **Sphinx** can also produce a PDF version of your document without having to edit any of the source RST files. **Sphinx** does not build PDF documents directly. Instead it outputs TeX formated files that are converted to PDF with the *latexmk* application that is part of the **LaTeX** typesetting system. 
 
-But there is more Sphinx can do.  With just a few addtional tools, you can build a PDF version of your document with just some additional configuration. In part 3 of this series you will explore how to use Sphinx to generate PDF copy of your document.
+[The LaTeX Project](https://www.latex-project.org/){:target="_blank"} provides links to LaTeX distributions for Linux, Mac OS, and Windows platforms. For this article I'll cover installtion for the Mac OS and Ubuntu platforms, since those are the systems I use most often for my work.
+
+### Mac OS Install
+
+To install LaTeX for the Mac OS:
+
+1. Go to the [MacTeX](http://www.tug.org/mactex/){:target="_blank"}
+2. Click on the download the **MacTeX** download link.
+3. Click on the **MacTeX.pkg** link.
+4. Double click mactex package you donloaded to finish the installation.
+
+### Ubuntu Install
+
+On Ubuntu, use the *apt-get* to install LaTeX by running these commands:
+
+1. sudo apt-get install latexmk
+2. sudo apt-get install texlive-latex-base
+3. sudp apt-get install texlive-latex-extra
+
+### Configure LaTeX Builder
+
+Open the `source/copy.py` file in an editor then add these lines:
+
+{% highlight python %}
+latex_documents = [('index', 'apiref.tex', u'API Reference', u'Ficticious Library', 'manual'),]
+
+latex_logo = 'Fictitious_Library_Logo.png'
+{% endhighlight %}
+
+The `latex_log` markdown is optional.  Use it if you want to include a logo in your PDF document. 
+
+### Build the PDF Document
+
+To build the PDF version of your document run `make` with the `latexdf` command.  The PDF document will is placed in the `build/latexpdf` directory and is named `apiref.pdf`.
+
+{% highlight bash %}
+% make clean latexpdf
+% open build/latexpdf/apiref.pdf
+{% endhighlight %}
+
+The cover of the PDF document will looks this:
+
+![](/assets/images/Rest_API_Ref_Cover.png){:width="100%" .align-center}
+
+The LaTeX builder creates a nice looking table of contents, complete with links to the chapters and pages.
+
+![](/assets/images/Rest_API_Ref_TOC.png){:width="100%" .align-center}
+
+Finally, if you click on the link to the first chapter, you can see how the chapters and APIs are formatted.
+
+![](/assets/images/Rest_API_Ref_Chp1.png){:width="100%" .align-center}
+
+
+## Summing UP
+
+You now have a complete **Read The Docs** document describing an HTTP REST API. All you have to do to put the document online is to copy the contents of the *build* directory to a web server directory so it can open the `build/html/index.html` file.  You can use your `starterdoc` project as  base template for other documents you may want to write. 
