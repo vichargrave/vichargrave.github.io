@@ -246,13 +246,13 @@ Notice how the API markdown has automatically highlighted and formatted the GET 
 The second API example adds a book to the library database. This API uses an HTTP POST request to send the book information, expressed in JSON format, to the web service. Again, copy the markdown text in this block and paste it into the `forms.rst` file.
 
 {% highlight python linenos %}
-Add Books to the Database
--------------------------
+Add a Book to the Database
+--------------------------
 
 .. http:post:: /libapi/book
    :noindex:
    
-     Retrieves a list of books written by a specified author.
+     Add a book written by a specified author.
 	 
    :form string: author (*required*) -- The name the of the author of the book
    :form string: title (*required*) -- Title of the book
