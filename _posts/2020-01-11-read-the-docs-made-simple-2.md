@@ -182,12 +182,12 @@ The APIs that you will document are based on a ficticious library database that 
 Retrieve Book Titles by Author
 ------------------------------
 
-.. http:get:: /libapi/author/(name)
+.. http:get:: /libapi/author/(author_name)
    :noindex:
    
      Retrieves a list of books written by a specified author.
 	 
-   :query string:  name (*required*) -- The name the of the particular author
+   :query string:  author_name (*required*) -- The name the of the particular author
    
    :requestheader Authorization: `token`
    
