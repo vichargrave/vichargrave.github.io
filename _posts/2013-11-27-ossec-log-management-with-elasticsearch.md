@@ -147,7 +147,7 @@ By default, the Elasticsearch files are maintained in */var/lib/elasticsearch* a
 cluster.name: mycluster
 {% endhighlight %}
 
-<The RPM will install Elasticsearch in */usr/share/elasticsearch* and the configuration files */etc/elasticsearch/elasticsearch.yml* and */etc/sysconfig/elasticsearch*. It also creates a service script to start, stop, and check the status of Elasticsearch. You can start and stop Elasticsearch with the *service* command:
+The RPM will install Elasticsearch in */usr/share/elasticsearch* and the configuration files */etc/elasticsearch/elasticsearch.yml* and */etc/sysconfig/elasticsearch*. It also creates a service script to start, stop, and check the status of Elasticsearch. You can start and stop Elasticsearch with the *service* command:
 
 {% highlight bash %}
 service elasticsearch start|stop|status
