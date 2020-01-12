@@ -46,7 +46,7 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 {% endhighlight %}
 
-The `pygments_style` variable determines the syntax highlighting for code blocks. In this case, `sphinx` pygments set a light green background, which is a classic look for code blocks with dopcuments that use the `sphinx_rtd_theme` theme.
+The `pygments_style` variable determines the syntax highlighting for code blocks. In this case, `sphinx` pygments set a light green background, which is a classic look for code blocks with documents that use the `sphinx_rtd_theme` theme.
 
 Build the document then open it in your default browser to see how your document looks.
 
