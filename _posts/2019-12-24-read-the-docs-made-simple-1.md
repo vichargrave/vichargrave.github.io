@@ -106,6 +106,7 @@ The files you edit to create your document are contained in the *restdoc/source*
 (starterdoc) % make clean html
 {% endhighlight %}
 
+<a name="restdoc"></a>
 The structure of the *restdoc* directory is populated with all the necessary base files to create an empty online document:
 
 {% highlight bash %}

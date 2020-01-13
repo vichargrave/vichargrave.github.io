@@ -235,7 +235,7 @@ Retrieve Book Titles by Author
 
 Notice that the API description in line 7 is indented 2 more spaces than the other markdown. As it turns, out this is necessary to make sure the description is indented so it aligns with other API text when the document is rendered in PDF format. Building PDF documents will b discussed later in this article.
 
-When you build the document and open the HTML in the browser, the *Retrieve API* page will look like this:
+Rebuild the document, by running `make clean html` in the *restdoc* directory -- refer to the [directory structure](https://vichargrave.github.io/programming/read-the-docs-made-simple-1/#restdoc) from Part 1 -- then open your document in a browser.  The *Retrieve API* page will look like this:
 
 ![](/assets/images/sphinx_retrieve_api_example.png){:width="100%" .align-center}
 
@@ -279,7 +279,7 @@ Add a Book to the Database
    }
 {% endhighlight %}
 
-After rebuilding the document, the *Forms API* page will look like this:
+Rebuild the document again then open in a browser.  The *Forms API* page will looks like this:
 
 ![](/assets/images/sphinx_forms_api_example.png){:width="100%" .align-center}
 
