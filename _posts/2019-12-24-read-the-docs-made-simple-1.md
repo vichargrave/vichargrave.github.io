@@ -243,4 +243,4 @@ Now you have two links in your table of contents that will open their respective
 
 ## Next Steps
 
-In this blog you were introduced to the process of creating a basic Sphinx project and how to generate your first document. You were able to easily create a table of contents and add pages, that were automatically indexed for you by Sphinx. Part 2 of this series will delve more deeply into the Sphinx facitlties and syntax you can use to describe REST APIs in detail. 
+In this blog you were introduced to the process of creating a basic Sphinx project and how to generate your first document. You were able to easily create a table of contents and add pages, that were automatically indexed for you by Sphinx. [Part 2](https://vichargrave.github.io/programming/read-the-docs-made-simple-2/){:target="_blank"} of this series will delve more deeply into the Sphinx facitlties and syntax you can use to describe REST APIs in detail. 
