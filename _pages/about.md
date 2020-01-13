@@ -11,7 +11,7 @@ permalink: /about/
 
 Welcome to my website which is the companion to my code contributions on [Github](https://github.com/vichargrave){:target="_blank"}. 
 
-I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering.  Currently I work as a Senior Software Engineer at [AttackIQ](https://attackiq.com){:target="_blank"} on the platform development team. With the AttackIQ Platform, you can continuously test and validate the security controls deployed on yout enterprise computing resources
+I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering.  Currently I work as a Senior Software Engineer at [AttackIQ](https://attackiq.com){:target="_blank"} on the platform development team. With the AttackIQ Platform, you can continuously test and validate the security controls deployed on your enterprise computing resources.
 
 I'm also a contributor to the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} with their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
 
