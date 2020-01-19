@@ -320,7 +320,7 @@ The `latex_log` markdown is optional.  Use it if you want to include a logo in y
 
 ### Build the PDF Document
 
-To build the PDF version of your document run `make` with the `latexdf` command.  The PDF document will is placed in the `build/latexpdf` directory and is named `apiref.pdf`.
+To build the PDF version of your document run `make` with the `latexdf` command.  The PDF document will is placed in the *build/latexpdf* directory and is named *apiref.pdf*.
 
 {% highlight bash %}
 % make clean latexpdf
@@ -338,6 +338,27 @@ The LaTeX builder creates a nice looking table of contents, complete with links 
 Finally, if you click on the link to the first chapter, you can see how the chapters and APIs are formatted.
 
 ![](/assets/images/Rest_API_Ref_Chp1.png){:width="100%" .align-center}
+
+### Add a PDF Download Link
+
+If you make a PDF version of your document, you may want to provide a way to download the PDF from one of the HTML pages. That's easy to do with the `:download:` directive, which will add a download link to your document.  A good place to add a PDF link is the table of contents in between the document title and the chapter items. 
+
+{% highlight python %}
+:download:`API Reference PDF<../build/latex/apiref.pdf>`
+{% endhighlight %}
+
+The syntax for this markdown is a bit peculiar. Following the download markdown, the name of the link is enclosed in \` characters and the link to the PDF is denoted by `<>` braces.  The path to the PDF version of the document is relative to the *conf.py* file in the *source* directory.  
+
+After placing the download link in the table of contents, build the PDF version of your document then the HTML version.
+
+{% highlight bash %}
+make clean latexpdf
+make html
+{% endhighlight %}
+
+You should only make and clean when you build the PDF, not the HTML. If you clean at the HTML building stage, you will delete the PDF document. When both versions of the document are built the PDF will be copied to a downloads directory in the *build/html* folder.  Here is the revised table of contents with the PDF link:
+
+![](/assets/images/First_Sphinx_Document_4.png){:width="100%" .align-center}
 
 
 ## Summing UP
