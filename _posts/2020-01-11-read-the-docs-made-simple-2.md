@@ -23,7 +23,7 @@ This article is Part 2 of a 2 part series which shows you how to use **Read The 
 
 ## Change the Document Theme
 
-The base document you buiit looked nice enough, but was, well, a little plain.  Before launching into the intricacies of Sphinx syntax, let's change the theme to make it look a little more attractive.
+The base document you built looked nice enough, but was, well, a little plain.  Before launching into the intricacies of Sphinx syntax, let's change the theme to make it look a little more attractive.
 
 If you go to the [Sphinx themes](https://sphinx-themes.org/){:target="_blank"} site, you will see a large number of thmese to choose from. The default theme in the current version of your document is `alabaster`.  It's entirley up to you, and I encourage you to experiment with themes, but the one I like is `sphinx_rtd_theme`, which is a popular Python documentation theme. Search for this theme, then click on the [sample](https://sphinx-themes.org/html/sphinx_rtd_theme/sphinx_rtd_theme/index.html){:target="_blank"} link to see what a document using the theme looks like.  For the sample document you are building, I'm going to suggest you use `sphinx_rtd_theme`.
 
