@@ -122,7 +122,7 @@ When you are done configuring the processor, click on *Apply* to finish.
 
 ### JoltTransformJson
 
-Tweets contain **a lot** of fields. Aside from the basic fields like that convey the tweet text, whether the tweet was favorited or retweeted, and the tweet time stamp, there are host of other tweet object in a typical message such as twitter user information, entities (that include hashtags), media entities, the list goes on and on.  Elasticsearch limits the numebr of fields that can be indexed to 1000. This may seem a like number that would be tough to exceed, but well travelled tweets that have numerous retweets, favorites, hashtags, and the like can exceed this limit.
+Tweets contain **a lot** of fields like tweet text, whether the tweet was favorited or retweeted, tweet time stamp, many user information fields, and so on.  Elasticsearch limits the numebr of fields that can be indexed to 1000. This may seem a like number that would be tough to exceed, but well travelled tweets that have numerous retweets, favorites, hashtags, and the like can exceed this limit.
 
 That's where the *JoltTransformJson* processor comes in, by only forwarding a specific subset of JSON tweet fields.  *JoltTransformJson* can also rename and map fields to your liking. *JoltTransformJson* maps fields with *specifications* that are comprised of one or more JSON objects that specify field name mappings.  For tweets in this example,  the processor specification retains most of the top level fields, with their original names. Several `user` object fields are flattened into the top level and the names are prepended with the term `user` to emphasize their meaning in a tweet. 
 
