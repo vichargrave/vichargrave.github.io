@@ -175,7 +175,7 @@ When you are done configuring the processor, click on *Apply* to finish.
 *PutElasticsearchHttp* is the last processor in the data pipeline. It will take the mapped tweets from the *JoltTransformJson* process and index them in an Elasticsearch instance. To configure  *PutElasticsearchHttp*, open the processor configuration panel then set these properties:
 
 - `Elasticsearch URL` - `localhost:9200` or another IP/host if Elasticsearch runs on a remote system.
-- `Index` - `tweets-$now():format(yyyy-MM-dd)}`  This will create a new index every day.
+- `Index` - `tweets-$now():format(yyyy.MM.dd)}`  This will create a new index every day.
 - `Type` - `_doc` Default type for Elasticsearch 7.x.  Starting with this version you can only have one type per index.
 - `Index Operation` - `Index` Specifies indexing tweets in Elasticsearch, as opposed to querying.
 
@@ -378,7 +378,7 @@ The output of this command should look like this:
     "max_score" : 1.0,
     "hits" : [
       {
-        "_index" : "tweets-2019-05-25",
+        "_index" : "tweets-2019.05.25",
         "_type" : "_doc",
         "_id" : "xS_P8WoBB9fmJNnwbj2e",
         "_score" : 1.0,
