@@ -179,7 +179,9 @@ When you are done configuring the processor, click on *Apply* to finish.
 - `Type` - `_doc` Default type for Elasticsearch 7.x.  Starting with this version you can only have one type per index.
 - `Index Operation` - `Index` Specifies indexing tweets in Elasticsearch, as opposed to querying.
 
-While the configuration dialog is open, click on the *Settings* tab then set the processor name to `Index Tweets in Elasticsearch` . Select the `failure` and `retry`automatic terminate relationships.
+While the configuration dialog is open, click on the *Settings* tab then set the processor name to `Index Tweets in Elasticsearch` . Select the `failure`, `retry`, and `success` automatic terminate relationships.
+
+![Nifi_full_canvas](/assets/images/Nifi_configure_put_elasticsearch_http.png)
 
 When you are done configuring the processor, click on *Apply* to finish.
 
