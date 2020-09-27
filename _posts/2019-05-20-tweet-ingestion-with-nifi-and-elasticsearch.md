@@ -181,7 +181,7 @@ When you are done configuring the processor, click on *Apply* to finish.
 
 While the configuration dialog is open, click on the *Settings* tab then set the processor name to `Index Tweets in Elasticsearch` . Select the `failure`, `retry`, and `success` automatic terminate relationships.
 
-![Nifi_full_canvas](/assets/images/Nifi_configure_put_elasticsearch_http.png)
+![Nifi_full_canvas](/assets/images/Nifi_configure_put_elasticsearch_http.png){:width="80%" .align-center}
 
 When you are done configuring the processor, click on *Apply* to finish.
 
