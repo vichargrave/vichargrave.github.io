@@ -138,16 +138,21 @@ pcap_t* open_pcap_socket(char* device, const char* bpfstr)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t* pd;
+    pcap_if_t* devs = NULL;
     uint32_t  srcip, netmask;
     struct bpf_program  bpf;
 
     // If no network interface (device) is specfied, get the first one.
-    if (!*device && !(device = pcap_lookupdev(errbuf)))
+    if (!*device && pcap_findalldevs(&devs, errbuf))
     {
-        printf("pcap_lookupdev(): %s\n", errbuf);
+        printf("pcap_findalldevs(): %s\n", errbuf);
         return NULL;
     }
-
+    else if (!*device)
+    {
+        device = devs[0].name;
+    }
+    
     // Open the device for live capture, as opposed to reading a packet
     // capture file.
     if ((pd = pcap_open_live(device, BUFSIZ, 1, 0, errbuf)) == NULL)
@@ -184,7 +189,7 @@ pcap_t* open_pcap_socket(char* device, const char* bpfstr)
 
 ### Select a Network Device
 
-**[Lines 9-13]** Network interfaces, or devices, are denoted by unique character strings referred to as network devices in the libpcap man page. For instance under Linux, Ethernet devices have the general form **ethN** where `N` == `0`, `1`, `2`, and so on depending on how many network interfaces a system contains. The first argument to `open_pcap_socket()` is the device string obtained from the program command line. If no device is specified `pcap_lookupdev()` is called to select a device, usually the first one that it finds.
+**[Lines 9-13]** Network interfaces, or devices, are denoted by unique character strings referred to as network devices in the libpcap man page. For instance under Linux, Ethernet devices have the general form **ethN** where `N` == `0`, `1`, `2`, and so on depending on how many network interfaces a system contains. The first argument to `open_pcap_socket()` is the device string obtained from the program command line. If no device is specified `pcap_findalldevs()` is called to select a device. This function returnms a list of devices and the program just picks the first one.
 
 ### Open a Network Device for Live Capture
 
@@ -279,12 +284,11 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
                   u_char *packetptr)
 {
     struct ip* iphdr;
-    struct icmphdr* icmphdr;
+    struct icmp* icmphdr;
     struct tcphdr* tcphdr;
     struct udphdr* udphdr;
     char iphdrInfo[256], srcip[256], dstip[256];
-    unsigned short id, seq;
-
+ 
     // Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
     iphdr = (struct ip*)packetptr;
@@ -293,7 +297,7 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
     sprintf(iphdrInfo, "ID:%d TOS:0x%x, TTL:%d IpLen:%d DgLen:%d",
             ntohs(iphdr->ip_id), iphdr->ip_tos, iphdr->ip_ttl,
             4*iphdr->ip_hl, ntohs(iphdr->ip_len));
-
+ 
     // Advance to the transport layer header then parse and display
     // the fields based on the type of hearder: tcp, udp or icmp.
     packetptr += 4*iphdr->ip_hl;
@@ -301,35 +305,33 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
     {
     case IPPROTO_TCP:
         tcphdr = (struct tcphdr*)packetptr;
-        printf("TCP  %s:%d -> %s:%d\n", srcip, ntohs(tcphdr->source),
-               dstip, ntohs(tcphdr->dest));
+        printf("TCP  %s:%d -> %s:%d\n", srcip, ntohs(tcphdr->th_sport),
+               dstip, ntohs(tcphdr->th_dport));
         printf("%s\n", iphdrInfo);
         printf("%c%c%c%c%c%c Seq: 0x%x Ack: 0x%x Win: 0x%x TcpLen: %d\n",
-               (tcphdr->urg ? 'U' : '*'),
-               (tcphdr->ack ? 'A' : '*'),
-               (tcphdr->psh ? 'P' : '*'),
-               (tcphdr->rst ? 'R' : '*'),
-               (tcphdr->syn ? 'S' : '*'),
-               (tcphdr->fin ? 'F' : '*'),
-               ntohl(tcphdr->seq), ntohl(tcphdr->ack_seq),
-               ntohs(tcphdr->window), 4*tcphdr->doff);
+               (tcphdr->th_flags & TH_URG ? 'U' : '*'),
+               (tcphdr->th_flags & TH_ACK ? 'A' : '*'),
+               (tcphdr->th_flags & TH_PUSH ? 'P' : '*'),
+               (tcphdr->th_flags & TH_RST ? 'R' : '*'),
+               (tcphdr->th_flags & TH_SYN ? 'S' : '*'),
+               (tcphdr->th_flags & TH_SYN ? 'F' : '*'),
+               ntohl(tcphdr->th_seq), ntohl(tcphdr->th_ack),
+               ntohs(tcphdr->th_win), 4*tcphdr->th_off);
         break;
-
+ 
     case IPPROTO_UDP:
         udphdr = (struct udphdr*)packetptr;
-        printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->source),
-               dstip, ntohs(udphdr->dest));
+        printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->uh_sport),
+               dstip, ntohs(udphdr->uh_dport));
         printf("%s\n", iphdrInfo);
         break;
-
+ 
     case IPPROTO_ICMP:
-        icmphdr = (struct icmphdr*)packetptr;
+        icmphdr = (struct icmp*)packetptr;
         printf("ICMP %s -> %s\n", srcip, dstip);
         printf("%s\n", iphdrInfo);
-        memcpy(&id, (u_char*)icmphdr+4, 2);
-        memcpy(&seq, (u_char*)icmphdr+6, 2);
-        printf("Type:%d Code:%d ID:%d Seq:%d\n", icmphdr->type, icmphdr->code,
-               ntohs(id), ntohs(seq));
+        printf("Type:%d Code:%d ID:%d Seq:%d\n", icmphdr->icmp_type, icmphdr->icmp_code,
+               ntohs(icmphdr->icmp_hun.ih_idseq.icd_id), ntohs(icmphdr->icmp_hun.ih_idseq.icd_seq));
         break;
     }
     printf(
@@ -351,7 +353,7 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
 
 ### ICMP Header Parsing
 
-**[Lines 48-56]** The `struct icmphdr` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
+**[Lines 48-56]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
 
 ## Program Termination
 
