@@ -135,9 +135,6 @@ To set the  *JoltTransformJson* specification, open the processor configuration 
     "operation": "shift",
     "spec": {
       "created_at": "created_at",
-      "time_zone": "time_zone",
-      "utc_offset": "utc_offset",
-      "timestamp_ms": "timestamp_ms",
       "id_str": "id_str",
       "text": "text",
       "source": "source",
@@ -225,7 +222,12 @@ The final step in building the pipeline is to save it as a template.  Click on *
 
 ## Tweet Index Mapping
 
-When it comes to tweet indexing in Elasticsearch, the heavy lifting as far as field selection is concerned is done by the *JoltTransformJson* processor. Elasticsearch does a pretty good job of dynamically mapping fields, but it is a good practice to explicitly map fields to make sure Elasticsearch gets the field types right. This is particlarly true of date fields that come in various formats.  One example is the `timestamp_ms` tweet field. You want to make sure Elasticsearch maps this field as a date so Elasticsearch doesn't treat this field as a string preventing you from using date aritmetic in your tweet seaches. The following script creates a mapping template for the time series tweet indexes:
+When it comes to tweet indexing in Elasticsearch, the heavy lifting as far as field selection is concerned is done by the *JoltTransformJson* processor. Elasticsearch does a pretty good job of dynamically mapping fields, but dates can be a bit of a problem.  By default Elasticsearch maps date fields either of these two formats:
+
+- `strict_date_optional_time||epoch_millis` examples of which are `yyyy-MM-dd'T'HH:mm:ss.SSSZ` e.g. `2015-01-01T12:10:30Z` or `yyyy-MM-dd` e.g. `2015-01-01`
+- `epoch_millis` which representes the milliseconds since the Epoch
+
+Two Twitter date fields of interest are the *created_at* and *user.created_at* dates, the date of the tweet creation and when the person who issued the tweet joined Twitter.  The Twitter stream formats these dates as `Thu Jan 01 12:10:30 GMT 2015`.  NiFi outputs this as `Thu Jan 01 12:10:30 0000 2015`, so the *created_at* and *user.created_at* must be mapped as `date` with format `"E MMM dd HH:mm:ss z yyyy||E MMM dd HH:mm:ss Z yyyy` which accepts either kind of date.  The follwing script maps the dates fields using these formats and sets the other field formats to defaults.
 
 {% highlight bash linenos %}
 
@@ -243,7 +245,8 @@ curl -H 'Content-Type: application/json' -XPUT 'http://'$1'/_index_template/twee
       "mappings" : {
         "properties" : {
           "created_at" : {
-            "type" : "text",
+            "type" : "date",
+			"format": "E MMM dd HH:mm:ss z yyyy||E MMM dd HH:mm:ss Z yyyy",
             "fields" : {
               "keyword" : {
                 "type" : "keyword",
@@ -289,15 +292,6 @@ curl -H 'Content-Type: application/json' -XPUT 'http://'$1'/_index_template/twee
           },
           "text" : {
             "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
-          },
-          "timestamp_ms" : {
-            "type" : "date",
             "fields" : {
               "keyword" : {
                 "type" : "keyword",
@@ -414,7 +408,8 @@ curl -H 'Content-Type: application/json' -XPUT 'http://'$1'/_index_template/twee
             }
           },
           "user_created_at" : {
-            "type" : "text",
+            "type" : "date",
+			"format" : "E MMM dd HH:mm:ss z yyyy||E MMM dd HH:mm:ss Z yyyy"
             "fields" : {
               "keyword" : {
                 "type" : "keyword",
@@ -547,7 +542,6 @@ The output of this command should look like this:
         "_score" : 1.0,
         "_source" : {
           "created_at" : "Sun May 26 01:44:12 +0000 2019",
-          "timestamp_ms" : "1558835052659",
           "id_str" : "1132462407165632512",
           "text" : "RT @startrekcbs: 25 years after #StarTrek #TNG ended, a new chapter begins. #StarTrekPicard starring @SirPatStew is coming soon to @CBSAllA…",
           "source" : "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
