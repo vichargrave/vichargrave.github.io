@@ -13,7 +13,7 @@ Welcome to my website which is the companion to my code contributions on [Github
 
 I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering. 
 
-Currently I'm a Senior Cyber Analyst/Engineer for [Forcepoint](https://www.forcepoint.com/) in the Forcepoint Behavior Analytics (FBA) Professional Services 
+Currently I'm a Senior Cyber Analyst/Engineer for [Forcepoint](https://www.forcepoint.com/){:target="_blank"} in the Forcepoint Behavior Analytics (FBA) Professional Services 
 Group helping our customers develop analytics to zero in on hard to find security threats.
 
 I work with the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} with their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
