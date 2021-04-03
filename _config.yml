@@ -78,7 +78,7 @@ analytics:
 author:
   name             : *name 
   avatar           : "/assets/images/vic.png"
-  bio              : "Coder on the loose, enjoying life one cup of coffee at a time."
+  bio              : "Security focused data wrangler, enjoying life one cup of coffee at a time."
   location         : "San Mateo, CA"
   links:
     - label: "vichargrave.github.io"
