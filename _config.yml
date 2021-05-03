@@ -14,7 +14,7 @@ locale                   : "en-US"
 title                    : "vichargrave.github.io"
 title_separator          : "-"
 name                     : &name "Vic Hargrave" # &name is a YAML anchor which can be *referenced later
-description              : &description "Security focused data wrangler, enjoying life one cup of coffee at a time."
+description              : &description "Security focused data wrangler. I shouldn't have to explain why 73 is the best number."
 url                      : https://vichargrave.github.io
 baseurl                  : 
 repository               : "vichargrave/vichargrave.github.io"
@@ -78,7 +78,7 @@ analytics:
 author:
   name             : *name 
   avatar           : "/assets/images/vic.png"
-  bio              : "Security focused data wrangler, enjoying life one cup of coffee at a time."
+  bio              : "Security focused data wrangler. I shouldn't have to explain why 73 is the best number."
   location         : "San Mateo, CA"
   links:
     - label: "vichargrave.github.io"
