@@ -9,7 +9,7 @@ permalink: /about/
 > __-- Sheldon Cooper__
 
 
-Welcome to my website which is the companion to my code contributions on [Github](https://github.com/vichargrave){:target="_blank"}. 
+Welcome to my [Github](https://github.com/vichargrave){:target="_blank"} website.  Many of my projects are discussed in blog articles here. 
 
 I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering. 
 
