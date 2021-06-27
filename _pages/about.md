@@ -13,7 +13,10 @@ Welcome to my [Github](https://github.com/vichargrave){:target="_blank"} website
 
 I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering. 
 
-I work with the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} with their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
+Currently I'm a Senior Cyber Analyst/Engineer for [Forcepoint](https://www.forcepoint.com/){:target="_blank"} in the Forcepoint Behavior Analytics (FBA) Professional Services 
+Group helping our customers develop analytics to zero in on hard to find security threats.
+
+I work with the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} in their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
 
 When I’m not slaving away over a hot keyboard – yes, I do have a life outside technology – I like spending time with my family, cooking, and attending the performing arts – theater, concerts, and movies. My family and I are ardent cat lovers and volunteer with feline rescue organizations fostering cats for future adoption.
 
