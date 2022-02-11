@@ -65,7 +65,7 @@ The goal of the example packet sniffer application is to collect raw IP packets 
 
 {% highlight c %}
 int main(int argc, char **argv)
-[
+{
     char interface[256] = "", bpfstr[256] = "";
     int packets = 0, c, i;
 
