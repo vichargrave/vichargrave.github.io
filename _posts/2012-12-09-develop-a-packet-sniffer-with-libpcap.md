@@ -17,13 +17,13 @@ tags:
   - Network
 ---
 
-Libpcap is an open source C library that provides an API for capturing packets directly from the datalink layer of Unix derived operating systems. It is used by popular packet capture applications such as tcpdump and snort that enables them to run on just about any flavor of Unix.
+Libpcap is an open source C library that provides an API for capturing packets directly from the datalink layer of Unix derived operating systems. It is used by popular packet capture applications such as [tcpdump](https://www.tcpdump.org){:target="_blank"} and [snort](https://www.snort.org){:target="_blank"} that enables them to run on just about any flavor of Unix.
 
 Here’s an example of a simple packet sniffer application based on libpcap that displays packet information in a snort-like format.
 
 ## Libpcap Installation
 
-Chances are if you use an open source UNIX derived operating system like Linux or FreeBSD libcpap was most likely included with your distribution along with tcpdump. If you do not have libpcap you can download it from www.tcpdump.org. To install follow these instructions:
+Chances are if you use an open source UNIX derived operating system like Linux or FreeBSD libcpap was most likely included with your distribution along with tcpdump. If you do not have libpcap you can download it from [tcpdump](https://www.tcpdump.org){:target="_blank"}. To install follow these instructions:
 
 1. Run `tar -zxvf libpcap.tar.gz` to unpack the libpcap tarball.
 2. cd to the resulting local libpcap directory.
@@ -40,71 +40,83 @@ Chances are if you use an open source UNIX derived operating system like Linux o
 The code for the packet sniffer will reside in a single file `sniffer.c` that starts off with the include files shown below. All libpcap programs require the pcap.h header file to gain access to library functions and constants. The netinet and arpa headers provide data structures that simplify the task of accessing protocol specific header fields. ANSI and UNIX standard headers are included so the program can display packet contents and handle program termination signals.
 
 {% highlight c %}
-#include <pcap.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
-#include <sys socket.h>
-#include <netinet in.h>
-#include <arpa inet.h>
-#include <netinet ip.h>
-#include <netinet tcp.h>
-#include <netinet udp.h>
-#include <netinet ip_icmp.h>
+#include <pcap/pcap.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <netinet/ip_icmp.h>
 
-pcap_t* pd;
-int linkhdrlen;{% endhighlight %}
+pcap_t* handle;
+int linkhdrlen;
+{% endhighlight %}
 
-There are two global variables we will use in the sniffer, the libpcap descriptor and the link header size.  The `pcap` socket descritpor is a `pcap_t` pointer to a structure identifies the packet capture channel and is used in all the libpcap function calls.  The link header size will be used during packet capture and parsing to skip over the datalink layer header to get to the IP header of each packet.
+There are two global variables we will use in the sniffer, the libpcap descriptor and the link header size.  The `pcap` handle is a `pcap_t` pointer to a structure identifies the packet capture channel and is used in all the libpcap function calls.  The link header size will be used during packet capture and parsing to skip over the datalink layer header to get to the IP header of each packet.
 
 ### Main Function
 
 The goal of the example packet sniffer application is to collect raw IP packets traversing a network so that we can inspect their header and payload fields to determine protocol type, source address, destination address and so on. Let’s take a look at the `main()` function for the program:
 
-{% highlight c %}
-int main(int argc, char **argv)
+{% highlight c linenos %}
+int main(int argc, char *argv[])
 {
-    char interface[256] = "", bpfstr[256] = "";
-    int packets = 0, c, i;
+    char device[256];
+    char bpfstr[256];
+    int count = 0;
+    int opt;
+ 
+    *device = 0;
 
     // Get the command line options, if any
-    while ((c = getopt (argc, argv, "hi:n:")) != -1)
+    while ((opt = getopt(argc, argv, "hi:n:")) != -1)
     {
-        switch (c)
+        switch (opt)
         {
         case 'h':
-            printf("usage: %s [-h] [-i ] [-n ] []\n", argv[0]);
+            printf("usage: %s [-h] [-i interface] [-n count] [BPF expression]\n", argv[0]);
             exit(0);
             break;
         case 'i':
-            strcpy(interface, optarg);
+            strcpy(device, optarg);
             break;
         case 'n':
-            packets = atoi(optarg);
+            count = atoi(optarg);
             break;
         }
     }
 
     // Get the packet capture filter expression, if any.
-    for (i = optind; i < argc; i++)
+    for (int i = optind; i < argc; i++)
     {
         strcat(bpfstr, argv[i]);
         strcat(bpfstr, " ");
     }
 
-    // Open libpcap, set the program termination signals then start
-    // processing packets.
-    if ((pd = open_pcap_socket(interface, bpfstr)))
-    {
-        signal(SIGINT, bailout);
-        signal(SIGTERM, bailout);
-        signal(SIGQUIT, bailout);
-        capture_loop(pd, packets, (pcap_handler)parse_packet);
-        bailout(0);
+    signal(SIGINT, bailout);
+    signal(SIGTERM, bailout);
+    signal(SIGQUIT, bailout);
+    
+    // Create packet capture handle.
+    handle = create_pcap_handle(device, bpfstr);
+    if (handle == NULL) {
+	    return -1;
     }
-    exit(0);
+
+    // Get the type of link layer.
+    get_link_header_len(handle);
+    if (linkhdrlen == 0) {
+	    return -1;
+    }
+
+    // Start the packet capture with a set count or continually if the count is 0.
+    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
+    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+	    return -1;
+    }
+    
+    return 0;
 }
 {% endhighlight %}
 
@@ -112,10 +124,10 @@ int main(int argc, char **argv)
 
 The `main()` function processes the command line arguments then relies on the following 4 functions to do the work:
 
-- `open_pcap_socket()` – opens a network interface (or device in libpcap lingo) to receive packets described by a packet capture filter.
-- `capture_loop()` – captures a specified number of packets on a network device calling a user supplied function to process each packet.
-- `parse_packet()` – all back function that will parse and display TCP, UDP and ICMP packet contents.
-- `bailout()` – function that is called by signal handlers and display the packet capture statistics.
+- `create_pcap_handle()` – Created a packet capture endpoint to receive packets described by a packet capture filter.
+- `get_link_header_len` – Gets the link header type and size that will be used during the packet capture and parsing.
+- `packet_handler()` – Call back function that will parses and displays the contents of each captured packet.
+- `bailout()` – Function called when the program is terminated to display the packet capture statistics.
 
 The packet sniffer supports the following program options
 
@@ -125,169 +137,133 @@ The packet sniffer supports the following program options
 
 All other string arguments are presumed to be parts of a packet filter statement and are combined into a single string. If no packet filter parameters are entered then all IP packets are captured.
 
-## Open a Packet Capture Socket
+## Create a Packet Capture Endpoint
 
-### Open Socket Function
-
-In UNIX system programming jargon a **socket** is an endpoint for network communication that is identified in a program with a **socket descriptor**. Although these terms more commonly refer to transport layer endpoints capable of bidirectional communication, we will use them in this document to refer to endpoints for packet capture at the datalink layer.
-
-Opening a packet capture socket involves a series of libpcap calls that are encapsulated in the `open_pcap_socket()` function:
+The libpcap calls to create a packet capture endpoint are encapsulated in the `create_pcap_handle()` function:
 
 {% highlight c linenos %}
-pcap_t* open_pcap_socket(char* device, const char* bpfstr)
+pcap_t* create_pcap_handle(char* device, const char* bpfstr)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t* pd;
-    pcap_if_t* devs = NULL;
-    uint32_t  srcip, netmask;
-    struct bpf_program  bpf;
+    pcap_t *handle = NULL;
+    pcap_if_t* devices = NULL;
+    struct bpf_program bpf;
+    bpf_u_int32 netmask;
+    bpf_u_int32 srcip;
 
     // If no network interface (device) is specfied, get the first one.
-    if (!*device && pcap_findalldevs(&devs, errbuf))
-    {
-        printf("pcap_findalldevs(): %s\n", errbuf);
-        return NULL;
-    }
-    else if (!*device)
-    {
-        device = devs[0].name;
-    }
-    
-    // Open the device for live capture, as opposed to reading a packet
-    // capture file.
-    if ((pd = pcap_open_live(device, BUFSIZ, 1, 0, errbuf)) == NULL)
-    {
-        printf("pcap_open_live(): %s\n", errbuf);
-        return NULL;
+    if (!*device) {
+    	if (pcap_findalldevs(&devices, errbuf)) {
+	        printf("pcap_findalldevs(): %s\n", errbuf);
+	        return NULL;
+	    }
+	    strcpy(device, devices[0].name);
     }
 
     // Get network device source IP address and netmask.
-    if (pcap_lookupnet(device, &srcip, &amp;netmask, errbuf) < 0)
-    {
-        printf("pcap_lookupnet: %s\n", errbuf);
-        return NULL;
+    if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == -1) {
+	    fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
+	    return NULL;
     }
 
-    // Convert the packet filter epxression into a packet
-    // filter binary.
-    if (pcap_compile(pd, &bpf, (char*)bpfstr, 0, netmask))
-    {
-        printf("pcap_compile(): %s\n", pcap_geterr(pd));
-        return NULL;
+    // Open the device for live capture.
+    handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
+    if (handle == NULL) {
+	    fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
+	    return NULL;
     }
 
-    // Assign the packet filter to the given libpcap socket.
-    if (pcap_setfilter(pd, &bpf) < 0)
-    {
-        printf("pcap_setfilter(): %s\n", pcap_geterr(pd));
-        return NULL;
+    // Convert the packet filter epxression into a packet filter binary.
+    if (pcap_compile(handle, &bpf, bpfstr, 0, netmask) == -1) {
+	    fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
+	    return NULL;
     }
 
-    return pd;
+    // Bind the packet filter to the libpcap handle.
+    if (pcap_setfilter(handle, &bpf) == -1) {
+	    fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
+	    return NULL;
+    }
+
+    return handle;
 }
 {% endhighlight %}
 
-### Select a Network Device
+**[Lines 11-17]** Network interfaces, or devices, are denoted by unique character strings referred to as network devices in the libpcap man page. For instance under Linux, Ethernet devices have the general form **ethN** where `N` == `0`, `1`, `2`, and so on depending on how many network interfaces a system contains. The first argument to `create_pcap_handle()` is the device string obtained from the program command line. If no device is specified `pcap_findalldevs()` is called to select a device. This function returnms a list of devices and the program just picks the first one.
 
-**[Lines 9-13]** Network interfaces, or devices, are denoted by unique character strings referred to as network devices in the libpcap man page. For instance under Linux, Ethernet devices have the general form **ethN** where `N` == `0`, `1`, `2`, and so on depending on how many network interfaces a system contains. The first argument to `open_pcap_socket()` is the device string obtained from the program command line. If no device is specified `pcap_findalldevs()` is called to select a device. This function returnms a list of devices and the program just picks the first one.
+**[Lines 20-23]** `pcap_open_live()` opens the selected network device for packet capture and returns a libpcap socket descriptor, if successful. The term **live** refers to the fact that packets will be read from an active network as opposed to a file containing packet data that were previously saved. The first argument to this function is the network device we want to use for packet capture, the second sets the maximum size of each packet that will be received, the third toggles promiscuous mode, the fourth sets a time out (if supported by the underlying OS) and the last is a pointer to an error message buffer. Promiscuous mode enables us to capture packets sent between any host on our network not just those that are sent to and from our system. However if our system resides on a packet switched network, enabling promiscuous mode has no effect since we will only see packets with our IP address due to the MAC address routing performed by the switch.
 
-### Open a Network Device for Live Capture
-
-**[Lines 17-21]** `pcap_open_live()` opens the selected network device for packet capture and returns a libpcap socket descriptor, if successful. The term **live** refers to the fact that packets will be read from an active network as opposed to a file containing packet data that were previously saved. The first argument to this function is the network device we want to use for packet capture, the second sets the maximum size of each packet that will be received, the third toggles promiscuous mode, the fourth sets a time out (if supported by the underlying OS) and the last is a pointer to an error message buffer. Promiscuous mode enables us to capture packets sent between any host on our network not just those that are sent to and from our system. However if our system resides on a packet switched network, enabling promiscuous mode has no effect since we will only see packets with our IP address due to the MAC address routing performed by the switch.
-
-### Get the Network Address and Subnet Mask
-
-**[Lines 24-28]** `pcap_lookupnet()` returns the network address and subnet mask for the packet capture socket. We will need the subnet mask in order to compile the packet filter string. The last argument to this function is a pointer to an error message buffer.
-
-### Compile a Packet Capture Filter
+**[Lines 26-30]** `pcap_lookupnet()` returns the network address and subnet mask for the packet capture socket. We will need the subnet mask in order to compile the packet filter string. The last argument to this function is a pointer to an error message buffer.
 
 Network traffic is analogous to radio broadcasts. Packets carrying a variety of protocol data are continually traversing busy networks just as radio waves are constantly transmitted into the atmosphere. To listen to a radio station you have to tune in to the transmission frequency of the desired station while ignoring all other frequencies. With libpcap you *tune in* to the packets you want to capture by describing the attributes of the desired packets in C like statments called packet filters. Here are some filters examples and what packets they tell libpcap to grab:
 
 - `tcp` – TCP packets
-- `tcp and src 128.218.1.38` – *TCP* packets with source address == *128.218.1.38*
-- `udp and dst 22.334.23.1` –  *UDP* packets with destination address == *22.334.23.1*
+- `tcp src 128.218.1.38` – *TCP* packets with source address == *128.218.1.38*
+- `udp dst 22.334.23.1` –  *UDP* packets with destination address == *22.334.23.1*
 - `udp and src 214.234.23.56 and port 53` – *DNS* packets with source address == *214.234.23.56*
-- `tcp and port 80` – *HTTP* packets
+- `tcp port 80` – *HTTP* packets
 - `icmp[0] == 0 or icmp[0] == 8` – *ICMP* Echo packets
 
-**[Lines 32-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket descriptor, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is an unused parameter we set to 0 and the last is a 32 bit pointer to the subnet mask we obtained with `pcap_lookupnet()`. From here on libpcap functions return `0` if successful and `-1` on error. In the latter case we can use `pcap_geterr()` to return a message describing the most recent error.
+**[Lines 33-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket descriptor, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is an unused parameter we set to 0 and the last is a 32 bit pointer to the subnet mask we obtained with `pcap_lookupnet()`. From here on libpcap functions return `0` if successful and `-1` on error. In the latter case we can use `pcap_geterr()` to return a message describing the most recent error.
 
-### Set the Packet Filter
+**[Lines 39-42]** `pcap_setfilter()` installs the compiled packet filter program into our packet capture device. This causes libpcap to start collecting the packets that we selected with the filter.
 
-**[Lines 39-43]** `pcap_setfilter()` installs the compiled packet filter program into our packet capture device. This causes libpcap to start collecting the packets that we selected with the filter.
+**[Line 44]** Return a useable packet capture handle everything is successful up to this point a valid libpcap socket descriptor is returned to the main program otherwise NULL is returned at any of the previous steps.
 
-**[Line 45]** Return a valid socket descriptor If everything is successful up to this point a valid libpcap socket descriptor is returned to the main program otherwise NULL is returned at any of the previous steps.
-
-## Packet Capture Loop
-
-### Capture Loop Function
-
-Libpcap provides 3 functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. For our packet sniffer we will use `pcap_loop()` and wrap the call to this function in `capture_loop()`:
+## Get Link Header Type and Size
 
 {% highlight c linenos %}
-void capture_loop(pcap_t* pd, int packets, pcap_handler func)
+void get_link_header_len(pcap_t* handle)
 {
     int linktype;
-
+ 
     // Determine the datalink layer type.
-    if ((linktype = pcap_datalink(pd)) < 0)
-    {
-        printf("pcap_datalink(): %s\n", pcap_geterr(pd));
+    if ((linktype = pcap_datalink(handle)) == -1) {
+        printf("pcap_datalink(): %s\n", pcap_geterr(handle));
         return;
     }
-
+ 
     // Set the datalink layer header size.
     switch (linktype)
     {
     case DLT_NULL:
         linkhdrlen = 4;
         break;
-
+ 
     case DLT_EN10MB:
         linkhdrlen = 14;
         break;
-
+ 
     case DLT_SLIP:
     case DLT_PPP:
         linkhdrlen = 24;
         break;
-
+ 
     default:
         printf("Unsupported datalink (%d)\n", linktype);
-        return;
+        linkhdrlen = 0;
     }
-
-    // Start capturing packets.
-    if (pcap_loop(pd, packets, func, 0) < 0)
-        printf("pcap_loop failed: %s\n", pcap_geterr(pd));
 }
 {% endhighlight %}
 
-### Determine the Datalink Type
-
 **[Lines 6-10]** Packets that are captured at the datalink layer are completely raw in the sense that they include the headers applied by all the network stack layers, including the datalink header, nothing is hidden from us. In our example packet sniffer we are only interested in IP packet data so we want to skip over the datalink header contained in each packet. `pcap_datalink()` helps us do this by returning a number corresponding to the datalink type associated with the packet capture socket.
 
-**[Lines 13-31]** Given the datalink type we save the corresponding datalink header size in the linkhdrlen global variable for use later when we parse IP packets. The datalink types we support include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If our datalink is not one of these we simply fail and return.
+**[Lines 12-30]** Given the datalink type we save the corresponding datalink header size in the linkhdrlen global variable for use later when we parse IP packets. The datalink types we support include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If our datalink is not one of these we simply fail and return.
 
-### Start Packet Capture
+## Parse and Display Packet Fields
 
-**[Lines 34-35]** `pcap_loop()` sets the packet count and installs our call back function.
-
-## Parse and Display Packets
-
-### Parsing Function
-
-The general technique for parsing packets is to set a character pointer to the beginning of the packet buffer then advance this pointer to a particlular protocol header by the size in bytes of the headers that precede it in the packet. The header can then be mapped to a IP, TCP, UDP and ICMP header structure by casting the character pointer to a protocol specific structure pointer. From there any protocol header field can be referenced directly though the protocol structure pointer. This techniques is used in the packet capture call back function:
+The general technique for parsing packets is to set a character pointer to the beginning of the packet buffer then advance this pointer to a particlular protocol header by the size in bytes of the headers that precede it in the packet. The header can then be mapped to a IP, TCP, UDP and ICMP header structure by casting the character pointer to a protocol specific structure pointer. From there any protocol header field can be referenced directly though the protocol structure pointer. This technique is used in the packet capture call back function:
 
 {% highlight c linenos %}
-void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
-                  u_char *packetptr)
+void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packetptr)
 {
     struct ip* iphdr;
     struct icmp* icmphdr;
     struct tcphdr* tcphdr;
     struct udphdr* udphdr;
-    char iphdrInfo[256], srcip[256], dstip[256];
+    char iphdrInfo[256];
+    char srcip[256];
+    char dstip[256];
  
     // Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
@@ -317,6 +293,7 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
                (tcphdr->th_flags & TH_SYN ? 'F' : '*'),
                ntohl(tcphdr->th_seq), ntohl(tcphdr->th_ack),
                ntohs(tcphdr->th_win), 4*tcphdr->th_off);
+	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
         break;
  
     case IPPROTO_UDP:
@@ -324,6 +301,7 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
         printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->uh_sport),
                dstip, ntohs(udphdr->uh_dport));
         printf("%s\n", iphdrInfo);
+	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
         break;
  
     case IPPROTO_ICMP:
@@ -332,30 +310,37 @@ void parse_packet(u_char *user, struct pcap_pkthdr *packethdr,
         printf("%s\n", iphdrInfo);
         printf("Type:%d Code:%d ID:%d Seq:%d\n", icmphdr->icmp_type, icmphdr->icmp_code,
                ntohs(icmphdr->icmp_hun.ih_idseq.icd_id), ntohs(icmphdr->icmp_hun.ih_idseq.icd_seq));
+	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
         break;
     }
-    printf(
-        "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
 }
 {% endhighlight %}
 
-### Define Protocol Specific Pointers
+**[Lines 3-9]** `packet_handler()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout.
 
-**[Lines 4-7]** `parse_packet()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout.
+**[Lines 12-28]** The packet pointer is advanced past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. This puts the pointer at the beginning of the IP header where we cast it to a struct ip pointer so we can readily extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol.
 
-### IP Header Parsing
+**[Lines 23-48]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers gives us access to TCP and UDP header fields respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length.
 
-**[Lines 12-22]** The packet pointer is advanced past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. This puts the pointer at the beginning of the IP header where we cast it to a struct ip pointer so we can readily extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol.
+**[Lines 50-57]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
 
-### TCP and UDP Header Parsing
+## Initiate Packet Capture
 
-**[Lines 25-46]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers gives us access to TCP and UDP header fields respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length.
+Libpcap provides 3 functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. The packet sniffer in this example uses `pcap_loop()`, included in lines 52 through 55 of `main()` intiate the packet capture: 
 
-### ICMP Header Parsing
+{% highlight c %}
+    // Start the packet capture with a set count or continually if the count is 0.
+    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
+    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+	    return -1;
+    }
+{% endhighlight %}
 
-**[Lines 48-56]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
+- `handle` - The handle to the packet capture endpoint.
+- `count` - Contains the number of packets to capture specified on the command line with option `-n count`. If none is specified `count` is 0 which causes packets to be captured indefinitly.
+- `packet_handler` - Call back functions which processes each packet.
 
-## Program Termination
+## Packet Capture Termination
 
 The `SIGINT`, `SIGTERM` and `SIGQUIT` interrupt signals are set to call the function `bailout()` which displays the packet count, closes the packet capture socket then exits the program. The call to `pcap_stats()` fills a `pcap_stats` structure that contains fields indicating how many incoming and outgoing packets were captures and how many incoming packets were dropped. The call to `pcap_close()` closed the packet capture socket.
 
