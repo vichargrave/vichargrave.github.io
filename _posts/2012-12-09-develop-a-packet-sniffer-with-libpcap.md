@@ -101,19 +101,19 @@ int main(int argc, char *argv[])
     // Create packet capture handle.
     handle = create_pcap_handle(device, bpfstr);
     if (handle == NULL) {
-	    return -1;
+        return -1;
     }
 
     // Get the type of link layer.
     get_link_header_len(handle);
     if (linkhdrlen == 0) {
-	    return -1;
+        return -1;
     }
 
     // Start the packet capture with a set count or continually if the count is 0.
     if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
-    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
-	    return -1;
+        fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+        return -1;
     }
     
     return 0;
@@ -129,7 +129,7 @@ The `main()` function processes the command line arguments then relies on the fo
 - `packet_handler()` – Call back function that will parses and displays the contents of each captured packet.
 - `bailout()` – Function called when the program is terminated to display the packet capture statistics.
 
-The packet sniffer supports the following program options
+The packet sniffer supports the following program options:
 
 - `-i` specifies the network interface to use for packet capture, by default libpcap looks one up.
 - `-n` specifies the total number of packets to capture, by default packets are captured indefinitely.
@@ -154,35 +154,35 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
     // If no network interface (device) is specfied, get the first one.
     if (!*device) {
     	if (pcap_findalldevs(&devices, errbuf)) {
-	        printf("pcap_findalldevs(): %s\n", errbuf);
-	        return NULL;
+            printf(stderr, "pcap_findalldevs(): %s\n", errbuf);
+            return NULL;
 	    }
-	    strcpy(device, devices[0].name);
+        strcpy(device, devices[0].name);
     }
 
     // Get network device source IP address and netmask.
     if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == -1) {
-	    fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
-	    return NULL;
+        fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
+        return NULL;
     }
 
     // Open the device for live capture.
     handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
     if (handle == NULL) {
-	    fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
-	    return NULL;
+        fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
+        return NULL;
     }
 
     // Convert the packet filter epxression into a packet filter binary.
     if (pcap_compile(handle, &bpf, bpfstr, 0, netmask) == -1) {
-	    fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
-	    return NULL;
+        fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
+        return NULL;
     }
 
     // Bind the packet filter to the libpcap handle.
     if (pcap_setfilter(handle, &bpf) == -1) {
-	    fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
-	    return NULL;
+        fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
+        return NULL;
     }
 
     return handle;
@@ -219,7 +219,7 @@ void get_link_header_len(pcap_t* handle)
  
     // Determine the datalink layer type.
     if ((linktype = pcap_datalink(handle)) == -1) {
-        printf("pcap_datalink(): %s\n", pcap_geterr(handle));
+        fprintf(stderr, "pcap_datalink(): %s\n", pcap_geterr(handle));
         return;
     }
  
@@ -349,8 +349,7 @@ void bailout(int signo)
 {
     struct pcap_stat stats;
 
-    if (pcap_stats(pd, &stats) >= 0)
-    {
+    if (pcap_stats(pd, &stats) >= 0) {
         printf("%d packets received\n", stats.ps_recv);
         printf("%d packets dropped\n\n", stats.ps_drop);
     }
