@@ -51,9 +51,10 @@ The code for the packet sniffer will reside in a single file `sniffer.c` that st
 
 pcap_t* handle;
 int linkhdrlen;
+int packets;
 {% endhighlight %}
 
-There are two global variables we will use in the sniffer, the libpcap descriptor and the link header size.  The `pcap` handle is a `pcap_t` pointer to a structure identifies the packet capture channel and is used in all the libpcap function calls.  The link header size will be used during packet capture and parsing to skip over the datalink layer header to get to the IP header of each packet.
+There are three global variables used in the sniffer, the libpcap handle, the link header size, and the number of packets captured.  The `pcap` handle is a `pcap_t` pointer to a structure identifies the packet capture channel and is used in all the libpcap function calls.  The `linkhdrlen` will be used during packet capture and parsing to skip over the datalink layer header to get to the IP header of each packet.  Similarly the `packets` value will be incremented every time a packet is captured and processed.
 
 ### Main Function
 
@@ -94,9 +95,9 @@ int main(int argc, char *argv[])
         strcat(bpfstr, " ");
     }
 
-    signal(SIGINT, bailout);
-    signal(SIGTERM, bailout);
-    signal(SIGQUIT, bailout);
+    signal(SIGINT, stop_capture);
+    signal(SIGTERM, stop_capture);
+    signal(SIGQUIT, stop_capture);
     
     // Create packet capture handle.
     handle = create_pcap_handle(device, bpfstr);
@@ -127,7 +128,7 @@ The `main()` function processes the command line arguments then relies on the fo
 - `create_pcap_handle()` – Created a packet capture endpoint to receive packets described by a packet capture filter.
 - `get_link_header_len` – Gets the link header type and size that will be used during the packet capture and parsing.
 - `packet_handler()` – Call back function that will parses and displays the contents of each captured packet.
-- `bailout()` – Function called when the program is terminated to display the packet capture statistics.
+- `stop_capture()` – Function called when the program is inteerrupted or ends to display the packet capture statistics.
 
 The packet sniffer supports the following program options:
 
@@ -154,9 +155,9 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
     // If no network interface (device) is specfied, get the first one.
     if (!*device) {
     	if (pcap_findalldevs(&devices, errbuf)) {
-            printf(stderr, "pcap_findalldevs(): %s\n", errbuf);
+            fprintf(stderr, "pcap_findalldevs(): %s\n", errbuf);
             return NULL;
-	    }
+        }
         strcpy(device, devices[0].name);
     }
 
@@ -197,11 +198,11 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
 
 Network traffic is analogous to radio broadcasts. Packets carrying a variety of protocol data are continually traversing busy networks just as radio waves are constantly transmitted into the atmosphere. To listen to a radio station you have to tune in to the transmission frequency of the desired station while ignoring all other frequencies. With libpcap you *tune in* to the packets you want to capture by describing the attributes of the desired packets in C like statments called packet filters. Here are some filters examples and what packets they tell libpcap to grab:
 
-- `tcp` – TCP packets
-- `tcp src 128.218.1.38` – *TCP* packets with source address == *128.218.1.38*
-- `udp dst 22.334.23.1` –  *UDP* packets with destination address == *22.334.23.1*
-- `udp and src 214.234.23.56 and port 53` – *DNS* packets with source address == *214.234.23.56*
+- `tcp` – Any TCP packets
 - `tcp port 80` – *HTTP* packets
+- `tcp and src 128.218.1.38` – *TCP* packets with source address == *128.218.1.38*
+- `udp and dst 22.334.23.1` –  *UDP* packets with destination address == *22.334.23.1*
+- `udp and src 214.234.23.56 and port 53` – *DNS* packets with source address == *214.234.23.56*
 - `icmp[0] == 0 or icmp[0] == 8` – *ICMP* Echo packets
 
 **[Lines 33-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket descriptor, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is an unused parameter we set to 0 and the last is a 32 bit pointer to the subnet mask we obtained with `pcap_lookupnet()`. From here on libpcap functions return `0` if successful and `-1` on error. In the latter case we can use `pcap_geterr()` to return a message describing the most recent error.
@@ -265,7 +266,7 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
     char srcip[256];
     char dstip[256];
  
-    // Skip the datalink layer header and get the IP header fields.
+     // Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
     iphdr = (struct ip*)packetptr;
     strcpy(srcip, inet_ntoa(iphdr->ip_src));
@@ -293,7 +294,8 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
                (tcphdr->th_flags & TH_SYN ? 'F' : '*'),
                ntohl(tcphdr->th_seq), ntohl(tcphdr->th_ack),
                ntohs(tcphdr->th_win), 4*tcphdr->th_off);
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
  
     case IPPROTO_UDP:
@@ -301,7 +303,8 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
         printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->uh_sport),
                dstip, ntohs(udphdr->uh_dport));
         printf("%s\n", iphdrInfo);
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
  
     case IPPROTO_ICMP:
@@ -310,23 +313,24 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
         printf("%s\n", iphdrInfo);
         printf("Type:%d Code:%d ID:%d Seq:%d\n", icmphdr->icmp_type, icmphdr->icmp_code,
                ntohs(icmphdr->icmp_hun.ih_idseq.icd_id), ntohs(icmphdr->icmp_hun.ih_idseq.icd_seq));
-	printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n");
+        packets += 1;
         break;
     }
 }
 {% endhighlight %}
 
-**[Lines 3-9]** `packet_handler()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout.
+**[Lines 3-9]** `packet_handler()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout. 
 
-**[Lines 12-28]** The packet pointer is advanced past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. This puts the pointer at the beginning of the IP header where we cast it to a struct ip pointer so we can readily extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol.
+**[Lines 14-20]** The packet pointer is advanced past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. This puts the pointer at the beginning of the IP header where we cast it to a struct ip pointer so we can readily extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol. The `packets` variable is incremeted for both TCP and UDP.
 
-**[Lines 23-48]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers gives us access to TCP and UDP header fields respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length.
+**[Lines 23-60]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers gives us access to TCP and UDP header fields respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length. As with the other two protocols, the `packets` variable is incremeted for ICMP.
 
 **[Lines 50-57]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
 
 ## Initiate Packet Capture
 
-Libpcap provides 3 functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. The packet sniffer in this example uses `pcap_loop()`, included in lines 52 through 55 of `main()` intiate the packet capture: 
+Libpcap provides three functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. The packet sniffer in this example uses `pcap_loop()`, included in lines 52 through 55 of `main()` intiate the packet capture: 
 
 {% highlight c %}
     // Start the packet capture with a set count or continually if the count is 0.
@@ -342,10 +346,10 @@ Libpcap provides 3 functions to capture packets: `pcap_next()`, `pcap_dispatch()
 
 ## Packet Capture Termination
 
-The `SIGINT`, `SIGTERM` and `SIGQUIT` interrupt signals are set to call the function `bailout()` which displays the packet count, closes the packet capture socket then exits the program. The call to `pcap_stats()` fills a `pcap_stats` structure that contains fields indicating how many incoming and outgoing packets were captures and how many incoming packets were dropped. The call to `pcap_close()` closed the packet capture socket.
+The `SIGINT`, `SIGTERM` and `SIGQUIT` interrupt signals are set to call the function `stop_capture()` which displays the packet count, closes the packet capture socket then exits the program. The call to `pcap_stats()` fills a `pcap_stats` structure that contains fields indicating how many incoming and outgoing packets were captures and how many incoming packets were dropped. The call to `pcap_close()` closed the packet capture socket.
 
 {% highlight c %}
-void bailout(int signo)
+void stop_capture(int signo)
 {
     struct pcap_stat stats;
 
@@ -360,49 +364,84 @@ void bailout(int signo)
 
 ## Build and Run the Sniffer
 
-You can get the source code for the project from Github – [https://github.com/vichargrave/sniffer](https://github.com/vichargrave/sniffer){:target="_blank"}. To build it just cd into the project directory and type make.
+You can get the source code for the project from Github – [https://github.com/vichargrave/sniffer](https://github.com/vichargrave/sniffer){:target="_blank"}. To build it just _cd_ into the project directory and type _make_.
 
-To test the sniffer application, let’s get all the traffic between the local system and Google. First we load a filter into sniffer that looks for any TCP packets with a source or destination port of 80. Note we need to run sniffer as root, Then we open a browser to [http://www.google.com](http://www.google.com){:target="_blank"}. The output should something like the following. As you can see my browser client – `192.168.1.105` – first starts the connection by going through the TCP handshaking by exchaning SYN and ACK packets. Then data transfer follows as evidenced by the PSH packets.
+To test the sniffer, capture some packets starting with each of the supported protocols, starting with ICMP. Run the command `ping 8.8.8.8` then run the sniffer to capture 4 ICMP packets. 
 
 {% highlight bash %}
-$ sudo ./sniffer tcp port 80
-TCP  192.168.1.105:56326 -> 83.145.197.2:80
-ID:55492 TOS:0x0, TTL:64 IpLen:20 DgLen:60
-****S* Seq: 0x68be5abd Ack: 0x0 Win: 0x3908 TcpLen: 40
+$ sudo ./sniffer -n 4 icmp
+CMP 192.168.1.35 -> 8.8.8.8
+ID:19160 TOS:0x0, TTL:64 IpLen:20 DgLen:84
+Type:8 Code:0 ID:34843 Seq:0
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-TCP  192.168.1.105:56329 -> 83.145.197.2:80
-ID:30751 TOS:0x0, TTL:64 IpLen:20 DgLen:60
-****S* Seq: 0x430bfb46 Ack: 0x0 Win: 0x3908 TcpLen: 40
+ICMP 8.8.8.8 -> 192.168.1.35
+ID:0 TOS:0x0, TTL:116 IpLen:20 DgLen:84
+Type:0 Code:0 ID:34843 Seq:0
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-TCP  83.145.197.2:80 -> 192.168.1.105:56326
-ID:0 TOS:0x20, TTL:42 IpLen:20 DgLen:60
-*A**S* Seq: 0xef8ca0d8 Ack: 0x68be5abe Win: 0x16a0 TcpLen: 40
+ICMP 192.168.1.35 -> 8.8.8.8
+ID:60421 TOS:0x0, TTL:64 IpLen:20 DgLen:84
+Type:8 Code:0 ID:34843 Seq:1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-TCP  192.168.1.105:56326 -> 83.145.197.2:80
-ID:55493 TOS:0x0, TTL:64 IpLen:20 DgLen:52
-*A**** Seq: 0x68be5abe Ack: 0xef8ca0d9 Win: 0x73 TcpLen: 32
+ICMP 8.8.8.8 -> 192.168.1.35
+ID:0 TOS:0x0, TTL:116 IpLen:20 DgLen:84
+Type:0 Code:0 ID:34843 Seq:1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-TCP  192.168.1.105:56326 -> 83.145.197.2:80
-ID:55494 TOS:0x0, TTL:64 IpLen:20 DgLen:774
-*AP*** Seq: 0x68be5abe Ack: 0xef8ca0d9 Win: 0x73 TcpLen: 32
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-TCP  83.145.197.2:80 -> 192.168.1.105:56329
-ID:0 TOS:0x20, TTL:42 IpLen:20 DgLen:60
-*A**S* Seq: 0xefdcfe52 Ack: 0x430bfb47 Win: 0x16a0 TcpLen: 40
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-TCP  192.168.1.105:56329 -> 83.145.197.2:80
-ID:30752 TOS:0x0, TTL:64 IpLen:20 DgLen:52
-*A**** Seq: 0x430bfb47 Ack: 0xefdcfe53 Win: 0x73 TcpLen: 32
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-TCP  83.145.197.2:80 -> 192.168.1.105:56326
-ID:503 TOS:0x20, TTL:42 IpLen:20 DgLen:52
-*A**** Seq: 0xef8ca0d9 Ack: 0x68be5d90 Win: 0x39 TcpLen: 32
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+4 packets captured
+8 packets received by filter
+0 packets dropped
 {% endhighlight %}
+
+To capture some UDP packets, send a DNS request with the command `nslookup httpforever.com`. Run the sniffer application to get UDP packets on port 53. After capturing a couple of packets, interrupt it by entering Ctrl-C.
+
+{% highlight bash %}
+$ sudo ./sniffer udp port 53
+UDP  192.168.1.35:57670 -> 192.168.1.1:53
+ID:35650 TOS:0x0, TTL:64 IpLen:20 DgLen:61
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+UDP  192.168.1.1:53 -> 192.168.1.35:57670
+ID:11593 TOS:0x0, TTL:64 IpLen:20 DgLen:93
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+^C
+2 packets captured
+34 packets received by filter
+0 packets dropped
+{% endhighlight %}
+
+Finally, capture some TCP packets by opening a browser to `http://httpforever.com`.  Run the sniffer to capture 4 TCP packets.
+
+{% highlight bash %}
+$ sudo sniffer -n 4 tcp and host httpforever.com
+TCP  192.168.1.35:63560 -> 172.67.181.181:80
+ID:0 TOS:0x0, TTL:64 IpLen:20 DgLen:64
+****SF Seq: 0x29e705e9 Ack: 0x0 Win: 0xffff TcpLen: 44
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+TCP  192.168.1.35:63561 -> 172.67.181.181:80
+ID:0 TOS:0x0, TTL:64 IpLen:20 DgLen:64
+****SF Seq: 0x997ace8c Ack: 0x0 Win: 0xffff TcpLen: 44
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+TCP  172.67.181.181:80 -> 192.168.1.35:63560
+ID:0 TOS:0x0, TTL:52 IpLen:20 DgLen:52
+*A**SF Seq: 0xf903f657 Ack: 0x29e705ea Win: 0xffff TcpLen: 32
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+TCP  192.168.1.35:63560 -> 172.67.181.181:80
+ID:0 TOS:0x0, TTL:64 IpLen:20 DgLen:40
+*A**** Seq: 0x29e705ea Ack: 0xf903f658 Win: 0x1000 TcpLen: 20
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+4 packets captured
+315 packets received by filter
+0 packets dropped
+{% endhighlight %}
+
+
