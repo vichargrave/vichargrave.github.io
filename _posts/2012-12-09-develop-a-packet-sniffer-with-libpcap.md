@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
         return -1;
     }
     
-    return 0;
+    stop_capture(0);
 }
 {% endhighlight %}
 
@@ -137,7 +137,7 @@ The packet sniffer supports the following program options:
 - `-n` specifies the total number of packets to capture, by default packets are captured indefinitely.
 - `-h` causes the program to display a program usage reminder.
 
-All other string arguments are presumed to be parts of a packet filter statement and are combined into a single string. If no packet filter parameters are entered then all IP packets are captured.
+All other string arguments are presumed to be parts of a packet filter statement and are combined into a single string. If no packet filter is entered, then all IP packets are captured.
 
 ## Create a Packet Capture Endpoint
 
@@ -199,18 +199,17 @@ pcap_t* create_pcap_handle(char* device, char* filter)
 
 Network traffic is analogous to radio broadcasts. Packets carrying a variety of protocol data are continually traversing busy networks just as radio waves are constantly transmitted into the atmosphere. To listen to a radio station you have to tune in to the transmission frequency of the desired station while ignoring all other frequencies. With libpcap you *tune in* to the packets you want to capture by describing the attributes of the desired packets in C like statments called packet filters. Here are some filters examples and what packets they tell libpcap to grab:
 
-- `tcp` – Any TCP packets
-- `tcp port 80` – *HTTP* packets
-- `tcp and src 128.218.1.38` – *TCP* packets with source address == *128.218.1.38*
-- `udp and dst 22.334.23.1` –  *UDP* packets with destination address == *22.334.23.1*
-- `udp and src 214.234.23.56 and port 53` – *DNS* packets with source address == *214.234.23.56*
-- `icmp[0] == 0 or icmp[0] == 8` – *ICMP* Echo packets
+- `tcp` – **TCP** packets
+- `udp` - **UDP** packets
+- `icmp` – **ICMP** packets
+- `udp port 53` – **DNS** request and response packets
+- `tcp port 80` - **HTTP** request and response packets
 
 **[Lines 33-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket descriptor, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is an unused parameter we set to 0 and the last is a 32 bit pointer to the subnet mask we obtained with `pcap_lookupnet()`. From here on libpcap functions return `0` if successful and `-1` on error. In the latter case we can use `pcap_geterr()` to return a message describing the most recent error.
 
 **[Lines 39-42]** `pcap_setfilter()` installs the compiled packet filter program into our packet capture device. This causes libpcap to start collecting the packets that we selected with the filter.
 
-**[Line 44]** Return a useable packet capture handle everything is successful up to this point a valid libpcap socket descriptor is returned to the main program otherwise NULL is returned at any of the previous steps.
+**[Line 44]** Return the packet capture handle ready for packet capture.
 
 ## Get Link Header Type and Size
 
@@ -248,9 +247,9 @@ void get_link_header_len(pcap_t* handle)
 }
 {% endhighlight %}
 
-**[Lines 6-10]** Packets that are captured at the datalink layer are completely raw in the sense that they include the headers applied by all the network stack layers, including the datalink header, nothing is hidden from us. In our example packet sniffer we are only interested in IP packet data so we want to skip over the datalink header contained in each packet. `pcap_datalink()` helps us do this by returning a number corresponding to the datalink type associated with the packet capture socket.
+**[Lines 6-9]** Packets that are captured at the datalink layer are completely raw in the sense that they include the headers applied by all the network stack layers, including the datalink header, nothing is hidden from us. In our example packet sniffer we are only interested in IP packet data so we want to skip over the datalink header contained in each packet. `pcap_datalink()` helps us do this by returning a number corresponding to the datalink type associated with the packet capture socket.
 
-**[Lines 12-30]** Given the datalink type we save the corresponding datalink header size in the linkhdrlen global variable for use later when we parse IP packets. The datalink types we support include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If our datalink is not one of these we simply fail and return.
+**[Lines 12-30]** Given the datalink type we save the corresponding datalink header size in the linkhdrlen global variable for use later when we parse IP packets. The datalink types we support include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If the datalink is none of these, set the `linkhdrlen` to 0.
 
 ## Parse and Display Packet Fields
 
@@ -323,11 +322,13 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
 
 **[Lines 3-9]** `packet_handler()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout. 
 
-**[Lines 14-20]** The packet pointer is advanced past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. This puts the pointer at the beginning of the IP header where we cast it to a struct ip pointer so we can readily extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol. The `packets` variable is incremeted for both TCP and UDP.
+**[Lines 12-19]** Advance the packet pointer past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. The packet pointer contains the address of the first byte of the IP header where it is cast it to a `struct ip` pointer to extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol. 
 
-**[Lines 23-60]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers gives us access to TCP and UDP header fields respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length. As with the other two protocols, the `packets` variable is incremeted for ICMP.
+**[Lines 22]** Advance the packet pointer past the IP header to point to the first byte of the transport layer payload.
 
-**[Lines 50-57]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses.
+**[Lines 25-50]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers enables access to TCP and UDP header fields, respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length. The `packets` variable is incremeted for both TCP and UDP.
+
+**[Lines 52-60]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses. The `packets` variable is incremeted for ICMP.
 
 ## Initiate Packet Capture
 
