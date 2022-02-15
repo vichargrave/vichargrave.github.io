@@ -128,7 +128,7 @@ The `main()` function processes the command line arguments then relies on the fo
 
 - `create_pcap_handle()` – Created a packet capture endpoint to receive packets described by a packet capture filter.
 - `get_link_header_len` – Gets the link header type and size that will be used during the packet capture and parsing.
-- `packet_handler()` – Call back function that will parses and displays the contents of each captured packet.
+- `packet_handler()` – Call back function that parses and displays the contents of each captured packet.
 - `stop_capture()` – Function called when the program is inteerrupted or ends to display the packet capture statistics.
 
 The packet sniffer supports the following program options:
@@ -251,7 +251,23 @@ void get_link_header_len(pcap_t* handle)
 
 **[Lines 12-30]** The datalink header size in the `linkhdrlen` global variable. The datalink types supported include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If the datalink is none of these, set `linkhdrlen` to 0.
 
-## Parse and Display Packet Fields
+## Initiate Packet Capture
+
+Libpcap provides three functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. The packet sniffer in this example uses `pcap_loop()`, included in lines 52 through 55 of `main()` intiate the packet capture: 
+
+{% highlight c %}
+    // Start the packet capture with a set count or continually if the count is 0.
+    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
+    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
+	    return -1;
+    }
+{% endhighlight %}
+
+- `handle` - The handle to the packet capture endpoint.
+- `count` - Contains the number of packets to capture specified on the command line with option `-n count`. If none is specified `count` is 0 which causes packets to be captured indefinitely.
+- `packet_handler` - The callback function to process packets discussed in the following section.
+
+## Process Packets
 
 The general technique for parsing packets is to set a character pointer to the beginning of the packet buffer then advance this pointer to a particlular protocol header by the size in bytes of the headers that precede it in the packet. The header can then be mapped to a IP, TCP, UDP and ICMP header structure by casting the character pointer to a protocol specific structure pointer. From there any protocol header field can be referenced directly though the protocol structure pointer. This technique is used in the packet capture call back function:
 
@@ -329,22 +345,6 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
 **[Lines 25-50]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers enables access to TCP and UDP header fields, respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port, followed by the TCP segment flags, sequence and acknowledgment numbers, window advertisement, and TCP segment length. The `packets` variable is incremeted for both TCP and UDP.
 
 **[Lines 52-60]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses. The `packets` variable is incremeted for ICMP.
-
-## Initiate Packet Capture
-
-Libpcap provides three functions to capture packets: `pcap_next()`, `pcap_dispatch()`, and `pcap_loop()`. The first function grabs 1 packet at a time so the programmer must call it in a loop to receive multiple packets. The other 2 loop automatically to receive multiple packets and call a user supplied call back function to process each one. The packet sniffer in this example uses `pcap_loop()`, included in lines 52 through 55 of `main()` intiate the packet capture: 
-
-{% highlight c %}
-    // Start the packet capture with a set count or continually if the count is 0.
-    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) < 0) {
-    	fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
-	    return -1;
-    }
-{% endhighlight %}
-
-- `handle` - The handle to the packet capture endpoint.
-- `count` - Contains the number of packets to capture specified on the command line with option `-n count`. If none is specified `count` is 0 which causes packets to be captured indefinitely.
-- `packet_handler` - Call back functions which processes each packet.
 
 ## Packet Capture Termination
 
