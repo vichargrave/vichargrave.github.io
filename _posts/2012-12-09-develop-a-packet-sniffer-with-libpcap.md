@@ -64,11 +64,12 @@ The goal of the example packet sniffer application is to collect raw IP packets 
 int main(int argc, char *argv[])
 {
     char device[256];
-    char bpfstr[256];
+    char filter[256];
     int count = 0;
     int opt;
  
     *device = 0;
+    *filter = 0;
 
     // Get the command line options, if any
     while ((opt = getopt(argc, argv, "hi:n:")) != -1)
@@ -91,8 +92,8 @@ int main(int argc, char *argv[])
     // Get the packet capture filter expression, if any.
     for (int i = optind; i < argc; i++)
     {
-        strcat(bpfstr, argv[i]);
-        strcat(bpfstr, " ");
+        strcat(filter, argv[i]);
+        strcat(filter, " ");
     }
 
     signal(SIGINT, stop_capture);
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
     signal(SIGQUIT, stop_capture);
     
     // Create packet capture handle.
-    handle = create_pcap_handle(device, bpfstr);
+    handle = create_pcap_handle(device, filter);
     if (handle == NULL) {
         return -1;
     }
@@ -143,7 +144,7 @@ All other string arguments are presumed to be parts of a packet filter statement
 The libpcap calls to create a packet capture endpoint are encapsulated in the `create_pcap_handle()` function:
 
 {% highlight c linenos %}
-pcap_t* create_pcap_handle(char* device, const char* bpfstr)
+pcap_t* create_pcap_handle(char* device, char* filter)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle = NULL;
@@ -162,7 +163,7 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
     }
 
     // Get network device source IP address and netmask.
-    if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == -1) {
+    if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == PCAP_ERROR) {
         fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
         return NULL;
     }
@@ -175,13 +176,13 @@ pcap_t* create_pcap_handle(char* device, const char* bpfstr)
     }
 
     // Convert the packet filter epxression into a packet filter binary.
-    if (pcap_compile(handle, &bpf, bpfstr, 0, netmask) == -1) {
+    if (pcap_compile(handle, &bpf, filter, 0, netmask) == PCAP_ERROR) {
         fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
         return NULL;
     }
 
     // Bind the packet filter to the libpcap handle.
-    if (pcap_setfilter(handle, &bpf) == -1) {
+    if (pcap_setfilter(handle, &bpf) == PCAP_ERROR) {
         fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
         return NULL;
     }
@@ -219,7 +220,7 @@ void get_link_header_len(pcap_t* handle)
     int linktype;
  
     // Determine the datalink layer type.
-    if ((linktype = pcap_datalink(handle)) == -1) {
+    if ((linktype = pcap_datalink(handle)) == PCAP_ERROR) {
         fprintf(stderr, "pcap_datalink(): %s\n", pcap_geterr(handle));
         return;
     }
