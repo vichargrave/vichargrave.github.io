@@ -58,7 +58,7 @@ There are three global variables used in the sniffer, the libpcap handle, the li
 
 ### Main Function
 
-The goal of the example packet sniffer application is to collect raw IP packets traversing a network so that we can inspect their header and payload fields to determine protocol type, source address, destination address and so on. Let’s take a look at the `main()` function for the program:
+The goal of the example packet sniffer application is to collect raw IP packets traversing a network and inspect their header and payload fields to determine protocol type, source address, destination address and so on. Let’s take a look at the `main()` function for the program:
 
 {% highlight c linenos %}
 int main(int argc, char *argv[])
@@ -193,11 +193,11 @@ pcap_t* create_pcap_handle(char* device, char* filter)
 
 **[Lines 11-17]** Network interfaces, or devices, are denoted by unique character strings referred to as network devices in the libpcap man page. For instance under Linux, Ethernet devices have the general form **ethN** where `N` == `0`, `1`, `2`, and so on depending on how many network interfaces a system contains. The first argument to `create_pcap_handle()` is the device string obtained from the program command line. If no device is specified `pcap_findalldevs()` is called to select a device. This function returnms a list of devices and the program just picks the first one.
 
-**[Lines 20-23]** `pcap_open_live()` opens the selected network device for packet capture and returns a libpcap socket descriptor, if successful. The term **live** refers to the fact that packets will be read from an active network as opposed to a file containing packet data that were previously saved. The first argument to this function is the network device we want to use for packet capture, the second sets the maximum size of each packet that will be received, the third toggles promiscuous mode, the fourth sets a time out (if supported by the underlying OS) and the last is a pointer to an error message buffer. Promiscuous mode enables us to capture packets sent between any host on our network not just those that are sent to and from our system. However if our system resides on a packet switched network, enabling promiscuous mode has no effect since we will only see packets with our IP address due to the MAC address routing performed by the switch.
+**[Lines 20-23]** `pcap_open_live()` opens the selected network device for packet capture and returns a libpcap socket handle, if successful. The term **live** refers to the fact that packets will be read from an active network as opposed to a file containing packet data that were previously saved. The first argument to this function is the network device from which packets will be captured, the second sets the packet capture snap length, the third toggles promiscuous mode, the fourth sets a time out (if supported by the underlying OS), and the last is a pointer to the error message buffer. 
 
-**[Lines 26-30]** `pcap_lookupnet()` returns the network address and subnet mask for the packet capture socket. We will need the subnet mask in order to compile the packet filter string. The last argument to this function is a pointer to an error message buffer.
+**[Lines 26-30]** `pcap_lookupnet()` returns the network address and subnet mask of the network where packets will be captured.The subnet mask is used to later in the call to compile the BPF filter. The last argument to this function is a pointer to the error message buffer.
 
-Network traffic is analogous to radio broadcasts. Packets carrying a variety of protocol data are continually traversing busy networks just as radio waves are constantly transmitted into the atmosphere. To listen to a radio station you have to tune in to the transmission frequency of the desired station while ignoring all other frequencies. With libpcap you *tune in* to the packets you want to capture by describing the attributes of the desired packets in C like statments called packet filters. Here are some filters examples and what packets they tell libpcap to grab:
+Network traffic is analogous to radio broadcasts. Packets carrying a variety of protocol data are continually traversing busy networks just as radio waves are constantly transmitted into the atmosphere. To listen to a radio station you have to tune in to the transmission frequency of the desired station while ignoring all other frequencies. With libpcap you *tune in* to the packets you want to capture by describing the attributes of the desired packets in C-like statments called packet filters. Here are some filters examples and what packets they tell libpcap to grab:
 
 - `tcp` – **TCP** packets
 - `udp` - **UDP** packets
@@ -205,11 +205,11 @@ Network traffic is analogous to radio broadcasts. Packets carrying a variety of 
 - `udp port 53` – **DNS** request and response packets
 - `tcp port 80` - **HTTP** request and response packets
 
-**[Lines 33-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket descriptor, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is an unused parameter we set to 0 and the last is a 32 bit pointer to the subnet mask we obtained with `pcap_lookupnet()`. From here on libpcap functions return `0` if successful and `-1` on error. In the latter case we can use `pcap_geterr()` to return a message describing the most recent error.
+**[Lines 33-36]** `pcap_compile()` converts the packet filter string argument of `open_pcap_live()` to a filter program that libcap can interpret. The first argument to `pcap_compile()` is the libpcap socket handle, the second is a pointer to the packet filter string, the third is a pointer to an empty libpcap filter program structure, the fourth is a code optimization flag set to 1 and the last is a 32 bit pointer to the subnet mask obtained with `pcap_lookupnet()`. `pcap_geterr()` returns a message describing the most recent error.
 
-**[Lines 39-42]** `pcap_setfilter()` installs the compiled packet filter program into our packet capture device. This causes libpcap to start collecting the packets that we selected with the filter.
+**[Lines 39-42]** `pcap_setfilter()` associates the compiled packet filter program with the packet capture.
 
-**[Line 44]** Return the packet capture handle ready for packet capture.
+**[Line 44]** Return the intialized packet capture handle.
 
 ## Get Link Header Type and Size
 
@@ -247,9 +247,9 @@ void get_link_header_len(pcap_t* handle)
 }
 {% endhighlight %}
 
-**[Lines 6-9]** Packets that are captured at the datalink layer are completely raw in the sense that they include the headers applied by all the network stack layers, including the datalink header, nothing is hidden from us. In our example packet sniffer we are only interested in IP packet data so we want to skip over the datalink header contained in each packet. `pcap_datalink()` helps us do this by returning a number corresponding to the datalink type associated with the packet capture socket.
+**[Lines 6-9]** Packets captured at the datalink layer are completely raw in the sense that they include the headers applied by all the network stack layers, including the datalink header. The packet sniffer is concerned only with IP packets, so when it comes time to parse each packet the code must skip over the datalink header contained in each packet to get to the start of the IP section. `pcap_datalink()` returns the number corresponding to the datalink type which corresponds to a specific datalink header length.
 
-**[Lines 12-30]** Given the datalink type we save the corresponding datalink header size in the linkhdrlen global variable for use later when we parse IP packets. The datalink types we support include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If the datalink is none of these, set the `linkhdrlen` to 0.
+**[Lines 12-30]** The datalink header size in the `linkhdrlen` global variable. The datalink types supported include `loopback` (`DLT_NULL`), `Ethernet` (`DLT_EN10MB`), `SLIP` (`DLT_SLIP`) and `PPP` (`DLT_PPP`). If the datalink is none of these, set `linkhdrlen` to 0.
 
 ## Parse and Display Packet Fields
 
@@ -322,11 +322,11 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
 
 **[Lines 3-9]** `packet_handler()` starts off by defining pointers to IP, TCP, UDP and ICMP header structures. Character buffers are included for storing header fields that will be displayed to stdout. 
 
-**[Lines 12-19]** Advance the packet pointer past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. The packet pointer contains the address of the first byte of the IP header where it is cast it to a `struct ip` pointer to extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format for we use `ntohs()` and `ntohl()` to correct the byte ordering on little endian systems. Then we advance the packet pointer past the IP header so that it points to the IP payload. Lastly we determine the protocol of the payload and switch to a section of code designed to handle that protocol. 
+**[Lines 12-19]** Advance the packet pointer past the datalink header by the number of bytes corresponding to the datalink type determined in `capture_loop()`. The packet pointer contains the address of the first byte of the IP header where it is cast it to a `struct ip` pointer to extract the packet id, time to live, IP header length and total IP packet length (including header). These values are placed into a single character buffer for display later. Since 2 and 4 byte header fields for all Internet protocols are in big endian format, `ntohs()` and `ntohl()` are called to correct the byte ordering on little endian systems. Then the packet pointer is advanced past the IP header so that it points to the IP payload. The protocol of the payload is obtained from the `ip_p` field in the switch statement to jump to a section of code designed to handle the protocol. 
 
 **[Lines 22]** Advance the packet pointer past the IP header to point to the first byte of the transport layer payload.
 
-**[Lines 25-50]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers enables access to TCP and UDP header fields, respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port. In addition we will display the TCP segment flags, sequence and acknowledgment numbers, window advertisement and TCP segment length. The `packets` variable is incremeted for both TCP and UDP.
+**[Lines 25-50]** Casting the packet pointer to `struct tcphdr` and `struct udphdr` pointers enables access to TCP and UDP header fields, respectively. In both cases the source IP address and port are displayed with an arrow pointing to the destination IP address and port, followed by the TCP segment flags, sequence and acknowledgment numbers, window advertisement, and TCP segment length. The `packets` variable is incremeted for both TCP and UDP.
 
 **[Lines 52-60]** The `struct icmp` pointer enables us to display ICMP packet type and code along with the source and destination IP addresses. The `packets` variable is incremeted for ICMP.
 
