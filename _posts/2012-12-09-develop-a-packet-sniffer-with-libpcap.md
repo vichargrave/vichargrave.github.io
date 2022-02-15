@@ -343,7 +343,7 @@ Libpcap provides three functions to capture packets: `pcap_next()`, `pcap_dispat
 {% endhighlight %}
 
 - `handle` - The handle to the packet capture endpoint.
-- `count` - Contains the number of packets to capture specified on the command line with option `-n count`. If none is specified `count` is 0 which causes packets to be captured indefinitly.
+- `count` - Contains the number of packets to capture specified on the command line with option `-n count`. If none is specified `count` is 0 which causes packets to be captured indefinitely.
 - `packet_handler` - Call back functions which processes each packet.
 
 ## Packet Capture Termination
