@@ -368,7 +368,11 @@ void stop_capture(int signo)
 
 You can get the source code for the project from Github – [https://github.com/vichargrave/sniffer](https://github.com/vichargrave/sniffer){:target="_blank"}. To build it just _cd_ into the project directory and type _make_.
 
-To test the sniffer, capture some packets starting with each of the supported protocols, starting with ICMP. Run the command `ping 8.8.8.8` then run the sniffer to capture 4 ICMP packets. 
+To test the sniffer, capture some packets starting with each of the supported protocols, starting with ICMP. 
+
+### ICMP Capture
+
+Run the command `ping 8.8.8.8` then run the sniffer to capture 4 ICMP packets. 
 
 {% highlight bash %}
 $ sudo ./sniffer -n 4 icmp
@@ -398,6 +402,8 @@ Type:0 Code:0 ID:34843 Seq:1
 0 packets dropped
 {% endhighlight %}
 
+### UDP Capture
+
 To capture some UDP packets, send a DNS request with the command `nslookup httpforever.com`. Run the sniffer application to get UDP packets on port 53. After capturing a couple of packets, interrupt it by entering Ctrl-C.
 
 {% highlight bash %}
@@ -415,6 +421,8 @@ ID:11593 TOS:0x0, TTL:64 IpLen:20 DgLen:93
 34 packets received by filter
 0 packets dropped
 {% endhighlight %}
+
+### TCP Capture
 
 Finally, capture some TCP packets by opening a browser to `http://httpforever.com`.  Run the sniffer to capture 4 TCP packets.
 
