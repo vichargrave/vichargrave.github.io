@@ -83,7 +83,9 @@ author:
   links:
     - label: "vichargrave.github.io"
       icon: "fas fa-fw fa-link"
-      url: "https://vichargrave.github.io"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/vichargrave/"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/vichargrave"
