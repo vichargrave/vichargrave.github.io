@@ -348,7 +348,7 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
 
 ## Packet Capture Termination
 
-The `SIGINT`, `SIGTERM` and `SIGQUIT` interrupt signals are set to call the function `stop_capture()` which displays the packet count, closes the packet capture socket then exits the program. The call to `pcap_stats()` fills a `pcap_stats` structure that contains fields indicating how many incoming and outgoing packets were captures and how many incoming packets were dropped. The call to `pcap_close()` closed the packet capture socket.
+The `SIGINT`, `SIGTERM` and `SIGQUIT` interrupt signals are set to call the function `stop_capture()` which displays the packet count, closes the packet capture socket then exits the program. The call to `pcap_stats()` fills a `pcap_stats` structure that contains fields indicating how many incoming and outgoing packets were captured and how many incoming packets were dropped. The `packets` variable contains the number of packets actually captured by the sniffer program.  The call to `pcap_close()` closed the packet capture handle.
 
 {% highlight c %}
 void stop_capture(int signo)
@@ -356,6 +356,7 @@ void stop_capture(int signo)
     struct pcap_stat stats;
 
     if (pcap_stats(pd, &stats) >= 0) {
+        printf("\n%d packets captured\n", packets);
         printf("%d packets received\n", stats.ps_recv);
         printf("%d packets dropped\n\n", stats.ps_drop);
     }
