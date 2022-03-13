@@ -129,7 +129,7 @@ The `main()` function processes the command line arguments then relies on the fo
 - `create_pcap_handle()` – Created a packet capture endpoint to receive packets described by a packet capture filter.
 - `get_link_header_len` – Gets the link header type and size that will be used during the packet capture and parsing.
 - `packet_handler()` – Call back function that parses and displays the contents of each captured packet.
-- `stop_capture()` – Function called when the program is inteerrupted or ends to display the packet capture statistics.
+- `stop_capture()` – Registered as the handler function for each of the signals `SIGINT`, `SIGTERM`, and `SIGQUIT` which are raised when a process is interrupted. This function is also called then the program terminates normally after a specified number of packets are captured.
 
 The packet sniffer supports the following program options:
 
