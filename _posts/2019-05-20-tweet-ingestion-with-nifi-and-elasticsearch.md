@@ -24,7 +24,7 @@ tags:
 
 You can get NiFi by building from [source](https://github.com/apache/nifi){:target="_blank"} or just grabbing working [binaries](https://nifi.apache.org/download.html){:target="_blank"}. I suggest using the binary version to get *NiFi* up and running as quickly as possible. 
 
-After downloading and unpacking the *NiFi* binary package, go to the NiFi directory and run `bin/nifi.sh start`.  It will take a coulple of miniutes for *NiFi* to start. When is running open the NiFi console at *http://localhost:8080/nifi* in a browser. The default listening port 8080 can be changed by setting the `nifi.web.http.port` field in the *conf/nifi.properties* configuration file. You should get a blank console canvas that looks like this:
+After downloading and unpacking the *NiFi* binary package, go to the NiFi directory and run `bin/nifi.sh start`.  It will take a couple of minutes for *NiFi* to start. When is running open the NiFi console at *http://localhost:8080/nifi* in a browser. The default listening port 8080 can be changed by setting the `nifi.web.http.port` field in the *conf/nifi.properties* configuration file. You should get a blank console canvas that looks like this:
 
 ![Nifi_blank_canvas](/assets/images/Nifi_blank_canvas.png)
 
