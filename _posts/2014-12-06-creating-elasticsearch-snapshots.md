@@ -98,7 +98,7 @@ curl -XPUT 'localhost:9200/_snapshot/twitter_backup' -d '
 }'
 {% endhighlight %}
 
-The file type in this example is defined as fs meaning file system. There are also types for Hadoop HDFS (*hdfs*), Amazon S3 (*s3*) and others. The location is defined to be the shared storage mount point on the cluster node and the snapshot data is stored in compressed form.
+The file type in this example is defined as *fs* meaning file system. There are also types for Hadoop HDFS (*hdfs*), Amazon S3 (*s3*) and others. The location is defined to be the shared storage mount point on the cluster node and the snapshot data is stored in compressed form.
 
 As of Elasticsearch 1.7, you have to set the path.repo field in the elasticsearch.yml file to one or more paths where snapshots are to be stored. This is similar to the path.data field which is set to the path where Elasticsearch data files are stored. The SMB server is configured to store snapshots in /data/snapshots, the value of path in */etc/smb.conf*, so the  path.repo field should be set to the same path.
 
@@ -110,10 +110,10 @@ Note you will have to restart Elasticsearch for this setting to take affect.
 
 ## Create a Snapshot
 
-When you create a snapshot, you can either include all or specific indices. Continuing with the example of ingesting tweet data, let’s say you are creating a new index every hour and that the format of the index name is tweets-YYYY-MM-DD. If you want to snapshot the index created on 2014-11-01 in the `twitter_backup` repository run this command:
+When you create a snapshot, you can either include all or specific indices. Continuing with the example of ingesting tweet data, let’s say you are creating a new index every say and that the format of the index name is tweets-YYYY-MM-DD. If you want to snapshot the index created on 2014-11-01 in the `twitter_backup` repository run this command:
 
 {% highlight bash %}
-curl -XPUT 'localhost:9200/_snapshot/twitter_backup/2014-11-01?pretty&wait_for_completion' -d '
+curl -XPUT 'localhost:9200/_snapshot/twitter_backup/tweets-2014-11-01?pretty&wait_for_completion' -d '
 {
       "indices": "tweets-2014-11-01",
       "ignore_unavailable": "true",
