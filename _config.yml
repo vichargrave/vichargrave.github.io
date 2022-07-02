@@ -78,7 +78,7 @@ analytics:
 author:
   name             : *name 
   avatar           : "/assets/images/vic.png"
-  bio              : "Security Focused Data Wrangler. Proving every day that all programmers are playwrights and all computers are lousy actors."
+  bio              : "Proving every day that all programmers are playwrights and all computers are lousy actors."
   location         : "San Mateo, CA"
   links:
     - label: "LinkedIn"
