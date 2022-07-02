@@ -14,7 +14,7 @@ locale                   : "en-US"
 title                    : "vichargrave.github.io"
 title_separator          : "-"
 name                     : &name "Vic Hargrave" # &name is a YAML anchor which can be *referenced later
-description              : &description "Security Focused Data Wrangler. Proving every day that all programmers are playwrights and all computers are lousy actors."
+description              : &description "Proving every day that all programmers are playwrights and all computers are lousy actors."
 url                      : https://vichargrave.github.io
 baseurl                  : 
 repository               : "vichargrave/vichargrave.github.io"
