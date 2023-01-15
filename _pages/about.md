@@ -9,14 +9,13 @@ permalink: /about/
 > __-- Sheldon Cooper__
 
 
-Welcome to my [Github](https://github.com/vichargrave){:target="_blank"} website.  Many of my projects are discussed in blog articles here. 
+Welcome to my [Github](https://github.com/vichargrave){:target="_blank"} website.  Many of my projects are discussed in blog articles on this site. 
 
-I’m a software engineer and system integrator with over 15 years of experience developing a broad range of security solutions including user/entity behavioral analytics, threat management, and content filtering. 
+I'm a cybersecurity professional with 20 years of experience developing a broad range of security solutions including user-entity behavioral analytics, threat management, and content filtering. I am currently a data analytics engineer at [Forcepoint](https://www.forcepoint.com/){:target="_blank"} where I work on Forcepoint’s Insider Risk Solutions. 
 
-Currently I'm a Senior Cyber Analyst/Engineer for [Forcepoint](https://www.forcepoint.com/){:target="_blank"} in the Forcepoint Behavior Analytics (FBA) Professional Services 
-Group helping our customers develop analytics to zero in on hard to find security threats.
+I am involved with the [Cloud Security Alliance Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} where I research and report on security issues affecting cloud services
 
-I work with the [Cloud Security Alliance (CSA)](https://cloudsecurityalliance.org/){:target="_blank"} in their [Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} helping them out with security research and reporting.
+I have a passion for sharing technical ideas through involvement in the open-source community and writing. 
 
 When I’m not slaving away over a hot keyboard – yes, I do have a life outside technology – I like spending time with my family, cooking, and attending the performing arts – theater, concerts, and movies. My family and I are ardent cat lovers and volunteer with feline rescue organizations fostering cats for future adoption.
 
