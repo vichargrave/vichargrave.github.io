@@ -280,6 +280,7 @@ from indexer import index_packets, dump_packets
 The *click* module is a convenient module that handles the numerous command line options.
 
 {% highlight python linenos %}
+@click.command()
 @click.option('--node', default=None, help='Elasticsearch IP and port (default=None, dump packets to stdout)')
 @click.option('--nic', default=None, help='Network interface for live capture (default=None, if file or dir specified)')
 @click.option('--file', default=None, help='PCAP file for file capture (default=None, if nic specified)')
