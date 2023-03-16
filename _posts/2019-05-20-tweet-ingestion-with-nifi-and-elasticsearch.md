@@ -568,6 +568,6 @@ The output of this command should look like this:
 
 ## Summing Up
 
-Now that you have a basic working NiFi data pipeline, there are several things you can explreo to improve it. If you want to expand the number of tweet fields you ingest, you can add the field maps to the *JoltTransformJson* processor and the *tweets_template.sh* .  
+Now that you have a basic working NiFi data pipeline, there are several things you can explore to improve it. If you want to expand the number of tweet fields you ingest, you can add the field maps to the *JoltTransformJson* processor and the *tweets_template.sh* .  
 
 Running NiFI and Elasticsearch on a single system may cause the NiFi queues to hit a critical point and bog down considerably. It's possible to run NiFi on a cluster of systems to get better throughput. It might also be a good idea to run Elasticsearch on a separate cluster. 
