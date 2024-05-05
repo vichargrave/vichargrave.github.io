@@ -11,7 +11,7 @@ permalink: /about/
 
 Welcome to my [Github](https://github.com/vichargrave){:target="_blank"} website.  Many of my projects are discussed in blog articles on this site. 
 
-I'm a cybersecurity professional with 20 years of experience developing a broad range of security solutions including user-entity behavioral analytics, threat management, and content filtering. I am currently a data analytics engineer at [Forcepoint](https://www.forcepoint.com/){:target="_blank"} where I work on [Forcepoint’s Insider Threat Solutions](https://www.forcepoint.com/product/fit). 
+I'm a cybersecurity professional with 20 years of experience developing a broad range of security solutions including user-entity behavioral analytics, threat management, and content filtering. I am currently a data analytics engineer at [Everfox](https://www.everfox.com/){:target="_blank"} where I work on [Insider Threat Solutions](https://www.everfox.com/products/insider-risk-solutions){:target="_blank"}. 
 
 I am involved with the [Cloud Security Alliance Top Threats Working Group](https://cloudsecurityalliance.org/working-groups/top-threats/#_overview){:target="_blank"} where I research and report on security issues affecting cloud services
 
