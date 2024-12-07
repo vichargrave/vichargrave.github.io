@@ -88,7 +88,7 @@ author:
       icon: "fab fa-fw fa-github"
       url: "https://github.com/vichargrave"
     - label: "Bluesky"
-      icon: "fab fa-fw fa-bluesky"
+      icon: "fa-brands fa-bluesky"
       url: "https://bsky.app/profile/catwallader.bsky.social"
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
